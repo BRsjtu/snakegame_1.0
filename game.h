@@ -48,6 +48,14 @@ public:
     void adjustDelay();
     //int getCurrentTime();//获取游戏进行的时间（单位：秒）
     void setModeSelect(int mode);//设置模式，修改modeSelect的值
+
+    //prop
+    void createRamdonProp();
+    void selectProp(PropType prop);
+    void ReserveSnake();
+    void DecreaseSize();
+    void AllowEatSelf();
+
 private:
     // We need to have two windows
     // One is for game introduction
@@ -77,7 +85,6 @@ private:
     int modeSelect;//1:classic mode，2:prop mode，3:survival mode
     //prop
     std::vector<SnakeBody> foodAndProp;
-    SnakeBody propType;
     PropType mPropType;
     void Game::selectProp();
 };
