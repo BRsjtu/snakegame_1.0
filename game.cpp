@@ -117,7 +117,7 @@ void Game::renderLeaderBoard() const
     wrefresh(this->mWindows[2]);
 }
 
-bool Game::renderRestartMenu() const
+bool Game::renderRestartMenu()
 {
     WINDOW * menu;
     int width = this->mGameBoardWidth * 0.5;
@@ -127,8 +127,8 @@ bool Game::renderRestartMenu() const
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = {"Restart", "Quit"};
-
+    std::vector<std::string> menuItems = {"classic mode","prop mode","survival mode", "Quit"};
+    
     int index = 0;
     int offset = 4;
     mvwprintw(menu, 1, 1, "Your Final Score:");
@@ -138,6 +138,10 @@ bool Game::renderRestartMenu() const
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
     mvwprintw(menu, 1 + offset, 1, menuItems[1].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
 
     wrefresh(menu);
 
@@ -183,11 +187,21 @@ bool Game::renderRestartMenu() const
 
     if (index == 0)
     {
+        this->setModeSelect(1);//classic mode
         return true;
     }
-    else
+    else if(index == 1)
     {
-        return false;
+        this->setModeSelect(2);//prop mode
+        return true;
+    }
+    else if (index == 2)
+    {
+        this->setModeSelect(3);//survival mode
+        return true;
+    }
+    else {
+        return false;//quit
     }
     
 }
@@ -328,7 +342,7 @@ void Game::runGame()
 {
     bool moveSuccess;
     int key;
-    int cishu, time;
+    //int cishu, time;
     while (true)
     {
         this->controlSnake();
@@ -434,8 +448,12 @@ bool Game::writeLeaderBoard()
     return true;
 }
 
-int Game::getCurrentTime() {
-    return runTime;
+//int game::getcurrenttime() {
+//    return runtime;
+//}
+
+void Game::setModeSelect(int mode) {
+    modeSelect = mode;
 }
 
 

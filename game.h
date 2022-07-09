@@ -44,10 +44,10 @@ public:
     void controlSnake() const;
     
 		void startGame();
-    bool renderRestartMenu() const;
+    bool renderRestartMenu();//删除了const为了修改modeSelect
     void adjustDelay();
-    int getCurrentTime();//获取游戏进行的时间（单位：秒）
-
+    //int getCurrentTime();//获取游戏进行的时间（单位：秒）
+    void setModeSelect(int mode);//设置模式，修改modeSelect的值
 private:
     // We need to have two windows
     // One is for game introduction
@@ -73,7 +73,9 @@ private:
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
-    int runTime;
+    //int runTime;
+    int modeSelect;//1:classic mode，2:prop mode，3:survival mode
+
 };
 
 #endif
