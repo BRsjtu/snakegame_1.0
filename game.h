@@ -75,7 +75,11 @@ private:
     const int mNumLeaders = 3;
     //int runTime;
     int modeSelect;//1:classic mode£¬2:prop mode£¬3:survival mode
-
+    //prop
+    std::vector<SnakeBody> foodAndProp;
+    SnakeBody propType;
+    PropType mPropType;
+    void Game::selectProp();
 };
 
 #endif
