@@ -39,7 +39,7 @@ Game::Game()
 
 Game::~Game()
 {
-    for (int i = 0; i < this->mWindows.size(); i ++)
+    for (int i = 0; i < this->mWindows.size(); i++)
     {
         delwin(this->mWindows[i]);
     }
@@ -107,7 +107,7 @@ void Game::renderLeaderBoard() const
     mvwprintw(this->mWindows[2], 14, 1, "Leader Board");
     std::string pointString;
     std::string rank;
-    for (int i = 0; i < std::min(this->mNumLeaders, this->mScreenHeight - this->mInformationHeight - 14 - 2); i ++)
+    for (int i = 0; i < std::min(this->mNumLeaders, this->mScreenHeight - this->mInformationHeight - 14 - 2); i++)
     {
         pointString = std::to_string(this->mLeaderBoard[i]);
         rank = "#" + std::to_string(i + 1) + ":";
@@ -117,9 +117,9 @@ void Game::renderLeaderBoard() const
     wrefresh(this->mWindows[2]);
 }
 
-bool Game::renderRestartMenu()
+bool Game::renderRestartMenu() const
 {
-    WINDOW * menu;
+    WINDOW* menu;
     int width = this->mGameBoardWidth * 0.5;
     int height = this->mGameBoardHeight * 0.5;
     int startX = this->mGameBoardWidth * 0.25;
@@ -127,8 +127,8 @@ bool Game::renderRestartMenu()
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = {"classic mode","prop mode","survival mode", "Quit"};
-    
+    std::vector<std::string> menuItems = { "Restart", "Quit" };
+
     int index = 0;
     int offset = 4;
     mvwprintw(menu, 1, 1, "Your Final Score:");
@@ -138,10 +138,6 @@ bool Game::renderRestartMenu()
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
     mvwprintw(menu, 1 + offset, 1, menuItems[1].c_str());
-    wattroff(menu, A_STANDOUT);
-    mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
-    wattroff(menu, A_STANDOUT);
-    mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
 
     wrefresh(menu);
 
@@ -149,32 +145,32 @@ bool Game::renderRestartMenu()
     while (true)
     {
         key = getch();
-        switch(key)
+        switch (key)
         {
-            case 'W':
-            case 'w':
-            case KEY_UP:
-            {
-                mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
-                index --;
-                index = (index < 0) ? menuItems.size() - 1 : index;
-                wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
-                wattroff(menu, A_STANDOUT);
-                break;
-            }
-            case 'S':
-            case 's':
-            case KEY_DOWN:
-            {
-                mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
-                index ++;
-                index = (index > menuItems.size() - 1) ? 0 : index;
-                wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
-                wattroff(menu, A_STANDOUT);
-                break;
-            }
+        case 'W':
+        case 'w':
+        case KEY_UP:
+        {
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            index--;
+            index = (index < 0) ? menuItems.size() - 1 : index;
+            wattron(menu, A_STANDOUT);
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            wattroff(menu, A_STANDOUT);
+            break;
+        }
+        case 'S':
+        case 's':
+        case KEY_DOWN:
+        {
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            index++;
+            index = (index > menuItems.size() - 1) ? 0 : index;
+            wattron(menu, A_STANDOUT);
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            wattroff(menu, A_STANDOUT);
+            break;
+        }
         }
         wrefresh(menu);
         if (key == ' ' || key == 10)
@@ -187,23 +183,13 @@ bool Game::renderRestartMenu()
 
     if (index == 0)
     {
-        this->setModeSelect(1);//classic mode
         return true;
     }
-    else if(index == 1)
+    else
     {
-        this->setModeSelect(2);//prop mode
-        return true;
+        return false;
     }
-    else if (index == 2)
-    {
-        this->setModeSelect(3);//survival mode
-        return true;
-    }
-    else {
-        return false;//quit
-    }
-    
+
 }
 
 void Game::renderPoints() const
@@ -233,11 +219,11 @@ void Game::initializeGame()
 void Game::createRamdonFood()
 {
     std::vector<SnakeBody> availableGrids;
-    for (int i = 1; i < this->mGameBoardHeight - 1; i ++)
+    for (int i = 1; i < this->mGameBoardHeight - 1; i++)
     {
-        for (int j = 1; j < this->mGameBoardWidth - 1; j ++)
+        for (int j = 1; j < this->mGameBoardWidth - 1; j++)
         {
-            if(this->mPtrSnake->isPartOfSnake(j, i))
+            if (this->mPtrSnake->isPartOfSnake(j, i))
             {
                 continue;
             }
@@ -263,7 +249,7 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
-    for (int i = 0; i < snakeLength; i ++)
+    for (int i = 0; i < snakeLength; i++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
     }
@@ -274,53 +260,53 @@ void Game::controlSnake() const
 {
     int key;
     key = getch();
-    switch(key)
+    switch (key)
     {
-        case 'W':
-        case 'w':
-        case KEY_UP:
-        {
-            this->mPtrSnake->changeDirection(Direction::Up);
-            break;
-        }
-        case 'S':
-        case 's':
-        case KEY_DOWN:
-        {
-            this->mPtrSnake->changeDirection(Direction::Down);
-            break;
-        }
-        case 'A':
-        case 'a':
-        case KEY_LEFT:
-        {
-            this->mPtrSnake->changeDirection(Direction::Left);
-            break;
-        }
-        case 'D':
-        case 'd':
-        case KEY_RIGHT:
-        {
-            this->mPtrSnake->changeDirection(Direction::Right);
-            break;
-        }
-        default:
-        {
-            break;
-        }
+    case 'W':
+    case 'w':
+    case KEY_UP:
+    {
+        this->mPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case 'S':
+    case 's':
+    case KEY_DOWN:
+    {
+        this->mPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case 'A':
+    case 'a':
+    case KEY_LEFT:
+    {
+        this->mPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case 'D':
+    case 'd':
+    case KEY_RIGHT:
+    {
+        this->mPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 }
 
 void Game::renderBoards() const
 {
-    for (int i = 0; i < this->mWindows.size(); i ++)
+    for (int i = 0; i < this->mWindows.size(); i++)
     {
         werase(this->mWindows[i]);
     }
     this->renderInformationBoard();
     this->renderGameBoard();
     this->renderInstructionBoard();
-    for (int i = 0; i < this->mWindows.size(); i ++)
+    for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
         wrefresh(this->mWindows[i]);
@@ -342,13 +328,12 @@ void Game::runGame()
 {
     bool moveSuccess;
     int key;
-    //int cishu, time;
     while (true)
     {
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-        
+
         bool eatFood = this->mPtrSnake->moveFoward();
         bool collision = this->mPtrSnake->checkCollision();
         if (collision == true)
@@ -366,8 +351,7 @@ void Game::runGame()
         this->renderFood();
         this->renderDifficulty();
         this->renderPoints();
-        //cishu++;
-        //time = cishu / 2;
+
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
@@ -408,7 +392,7 @@ bool Game::readLeaderBoard()
     {
         fhand.read(reinterpret_cast<char*>(&temp), sizeof(temp));
         this->mLeaderBoard[i] = temp;
-        i ++;
+        i++;
     }
     fhand.close();
     return true;
@@ -418,7 +402,7 @@ bool Game::updateLeaderBoard()
 {
     bool updated = false;
     int newScore = this->mPoints;
-    for (int i = 0; i < this->mNumLeaders; i ++)
+    for (int i = 0; i < this->mNumLeaders; i++)
     {
         if (this->mLeaderBoard[i] >= this->mPoints)
         {
@@ -440,7 +424,7 @@ bool Game::writeLeaderBoard()
     {
         return false;
     }
-    for (int i = 0; i < this->mNumLeaders; i ++)
+    for (int i = 0; i < this->mNumLeaders; i++)
     {
         fhand.write(reinterpret_cast<char*>(&this->mLeaderBoard[i]), sizeof(this->mLeaderBoard[i]));;
     }
@@ -448,14 +432,82 @@ bool Game::writeLeaderBoard()
     return true;
 }
 
-//int game::getcurrenttime() {
-//    return runtime;
-//}
+//Prop part
 
-void Game::setModeSelect(int mode) {
-    modeSelect = mode;
+void Game::createRamdonProp()
+{
+    std::vector<SnakeBody> availableGrids;
+    for (int i = 1; i < this->mGameBoardHeight - 1; i++)
+    {
+        for (int j = 1; j < this->mGameBoardWidth - 1; j++)
+        {
+            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfFoodOrProp(j, i))
+            {
+                continue;
+            }
+            else
+            {
+                availableGrids.push_back(SnakeBody(j, i));
+            }
+        }
+    }
+
+    // Randomly select a grid that is not occupied by the snake
+    int random_idx = std::rand() % availableGrids.size();
+    int random_prop = std::rand() % 3 - 1;
+    PropType newprop;
+    switch (random_prop)
+    {
+    case 0:
+        newprop = PropType::reserveSnake;
+        break;
+    case 1:
+        newprop = PropType::decreaseSize;
+        break;
+    case 2:
+        newprop = PropType::allowEatSelf;
+        break;
+    }
+    this->foodAndProp.push_back(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
+
 }
 
+
+
+
+void Game::selectProp(PropType prop)
+{
+    switch (this->mPropType)
+    {
+    case PropType::reserveSnake:
+        this->ReserveSnake();
+        break;
+    case PropType::decreaseSize:
+        this->DecreaseSize();
+        break;
+    case PropType::allowEatSelf:
+        this->AllowEatSelf();
+        break;
+    default:
+        break;
+    }
+}
+
+
+void Game::ReserveSnake()
+{
+
+}
+
+void Game::DecreaseSize()
+{
+
+}
+
+void Game::AllowEatSelf()
+{
+
+}
 
 
 

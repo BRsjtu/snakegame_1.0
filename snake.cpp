@@ -267,3 +267,9 @@ int Snake::getLength()
     return this->mSnake.size();
 }
 
+//Prop
+
+bool Snake::isPartOfFoodOrProp(int x, int y)
+{
+
+}

@@ -11,17 +11,27 @@ enum class Direction
     Right = 3,
 };
 
+enum class PropType
+{
+    reserveSnake = 0,
+    decreaseSize = 1,
+    allowEatSelf = 2,
+};
+
 class SnakeBody
 {
 public:
     SnakeBody();
     SnakeBody(int x, int y);
+    SnakeBody(int x, int y, PropType prop);
     int getX() const;
     int getY() const;
+    PropType getPropType() const;
     bool operator == (const SnakeBody& snakeBody);
 private:
     int mX;
     int mY;
+    PropType mPropType;
 };
 
 // Snake class should have no depency on the GUI library
@@ -49,6 +59,9 @@ public:
     int getLength();
     SnakeBody createNewHead();
     bool moveFoward();
+
+    //prop
+    bool isPartOfFoodOrProp(int x, int y);
 
 private:
     const int mGameBoardWidth;
