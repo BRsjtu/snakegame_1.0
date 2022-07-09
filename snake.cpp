@@ -15,6 +15,10 @@ SnakeBody::SnakeBody(int x, int y): mX(x), mY(y)
 {
 }
 
+SnakeBody::SnakeBody(int x, int y, PropType prop): mX(x), mY(y),mPropType(prop)
+{
+}
+
 int SnakeBody::getX() const
 {
     return mX;

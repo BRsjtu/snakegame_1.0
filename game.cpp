@@ -1,4 +1,4 @@
-#include <string>
+﻿#include <string>
 #include <iostream>
 #include <cmath> 
 
@@ -53,7 +53,8 @@ void Game::createInformationBoard()
     this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, startY, startX);
 }
 
-void Game::renderInformationBoard() const
+//void Game::renderInformationBoard() const
+void Game::renderInformationBoard_classicMode() const
 {
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
     mvwprintw(this->mWindows[0], 2, 1, "Author: Lei Mao");
@@ -81,7 +82,7 @@ void Game::createInstructionBoard()
     this->mWindows[2] = newwin(this->mScreenHeight - this->mInformationHeight, this->mInstructionWidth, startY, startX);
 }
 
-void Game::renderInstructionBoard() const
+void Game::renderInstructionBoard_classicMode() const
 {
     mvwprintw(this->mWindows[2], 1, 1, "Manual");
 
@@ -117,7 +118,7 @@ void Game::renderLeaderBoard() const
     wrefresh(this->mWindows[2]);
 }
 
-bool Game::renderRestartMenu() const
+bool Game::renderRestartMenu()
 {
     WINDOW* menu;
     int width = this->mGameBoardWidth * 0.5;
@@ -127,7 +128,7 @@ bool Game::renderRestartMenu() const
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = { "Restart", "Quit" };
+    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "Quit" };
 
     int index = 0;
     int offset = 4;
@@ -138,7 +139,10 @@ bool Game::renderRestartMenu() const
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
     mvwprintw(menu, 1 + offset, 1, menuItems[1].c_str());
-
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
     wrefresh(menu);
 
     int key;
@@ -183,11 +187,22 @@ bool Game::renderRestartMenu() const
 
     if (index == 0)
     {
+        this->setModeSelect(1);//classic mode
         return true;
     }
-    else
+    else if (index == 1)
     {
-        return false;
+        this->setModeSelect(2);//prop mode
+        return true;
+    }
+    else if (index == 2)
+    {
+        this->setModeSelect(3);//survival mode
+        return true;
+    }
+    else 
+    {
+        return false;//quit
     }
 
 }
@@ -297,15 +312,17 @@ void Game::controlSnake() const
     }
 }
 
-void Game::renderBoards() const
+//void Game::renderBoards() const
+void Game::renderBoards_classicMode() const
 {
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         werase(this->mWindows[i]);
     }
-    this->renderInformationBoard();
+    //this->renderInformationBoard();
+    this->renderInformationBoard_classicMode();
     this->renderGameBoard();
-    this->renderInstructionBoard();
+    this->renderInstructionBoard_classicMode();
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
@@ -314,7 +331,40 @@ void Game::renderBoards() const
     this->renderLeaderBoard();
 }
 
+void Game::renderBoards_propMode() const
+{
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        werase(this->mWindows[i]);
+    }
+    this->renderInformationBoard_classicMode();
+    this->renderGameBoard();
+    this->renderInstructionBoard_classicMode();
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        box(this->mWindows[i], 0, 0);
+        wrefresh(this->mWindows[i]);
+    }
+    this->renderLeaderBoard();
+}
 
+void Game::renderBoards_survivalMode() const
+{
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        werase(this->mWindows[i]);
+    }
+    this->renderInformationBoard_classicMode();
+    this->renderGameBoard();
+    this->renderInstructionBoard_classicMode();
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        box(this->mWindows[i], 0, 0);
+        wrefresh(this->mWindows[i]);
+    }
+    this->renderLeaderBoard();
+}
+    
 void Game::adjustDelay()
 {
     this->mDifficulty = this->mPoints / 5;
@@ -358,26 +408,127 @@ void Game::runGame()
     }
 }
 
+void Game::runGame_propMode()
+{
+    bool moveSuccess;
+    int key;
+    while (true)
+    {
+        this->controlSnake();
+        werase(this->mWindows[1]);
+        box(this->mWindows[1], 0, 0);
+
+        bool eatFood = this->mPtrSnake->moveFoward();
+        bool collision = this->mPtrSnake->checkCollision();
+        if (collision == true)
+        {
+            break;
+        }
+        this->renderSnake();
+        if (eatFood == true)
+        {
+            this->mPoints += 1;
+            this->createRamdonFood();
+            this->mPtrSnake->senseFood(this->mFood);
+            this->adjustDelay();
+        }
+        this->renderFood();
+        this->renderDifficulty();
+        this->renderPoints();
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
+
+        refresh();
+    }
+}
+
+void Game::runGame_survivalMode()
+{
+    bool moveSuccess;
+    int key;
+    while (true)
+    {
+        this->controlSnake();
+        werase(this->mWindows[1]);
+        box(this->mWindows[1], 0, 0);
+
+        bool eatFood = this->mPtrSnake->moveFoward();
+        bool collision = this->mPtrSnake->checkCollision();
+        if (collision == true)
+        {
+            break;
+        }
+        this->renderSnake();
+        if (eatFood == true)
+        {
+            this->mPoints += 1;
+            this->createRamdonFood();
+            this->mPtrSnake->senseFood(this->mFood);
+            this->adjustDelay();
+        }
+        this->renderFood();
+        this->renderDifficulty();
+        this->renderPoints();
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
+
+        refresh();
+    }
+}
 void Game::startGame()
 {
     refresh();
     bool choice;
+    //int gamemode = this->modeSelect;//1:classic mode��2:prop mode��3:survival mode
+    int gamemode = 1;
     while (true)
+        //switch (gamemode)
     {
-        this->readLeaderBoard();
-        this->renderBoards();
-        this->initializeGame();
-        this->runGame();
-        this->updateLeaderBoard();
-        this->writeLeaderBoard();
-        choice = this->renderRestartMenu();
-        if (choice == false)
+        //case 1://1:classic mode
         {
-            break;
+            switch (gamemode)
+            {
+            case 1://1:classic mode
+            //while (true)
+            {
+                this->readLeaderBoard();
+                this->renderBoards_classicMode();
+                this->initializeGame();
+                this->runGame();
+                this->updateLeaderBoard();
+                this->writeLeaderBoard();
+                choice = this->renderRestartMenu();
+                break;
+            }
+
+            case 2://2:prop mode
+            {
+                this->readLeaderBoard();
+                this->renderBoards_propMode();
+                this->initializeGame();
+                this->runGame_propMode();
+                this->updateLeaderBoard();
+                this->writeLeaderBoard();
+                choice = this->renderRestartMenu();
+                break;
+            }
+            case 3://3:survival mode
+            {
+                this->readLeaderBoard();
+                this->renderBoards_survivalMode();
+                this->initializeGame();
+                this->runGame();
+                this->updateLeaderBoard();
+                this->writeLeaderBoard();
+                choice = this->renderRestartMenu();
+                break;
+            }
+            }
+            if (choice == false)
+            {
+                break;
+            }
         }
     }
 }
-
 // https://en.cppreference.com/w/cpp/io/basic_fstream
 bool Game::readLeaderBoard()
 {
@@ -432,9 +583,13 @@ bool Game::writeLeaderBoard()
     return true;
 }
 
+void Game::setModeSelect(int mode) {
+    modeSelect = mode;
+}
+
 //Prop part
 
-void Game::createRamdonProp()
+void Game::createRamdomProp()
 {
     std::vector<SnakeBody> availableGrids;
     for (int i = 1; i < this->mGameBoardHeight - 1; i++)

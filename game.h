@@ -16,13 +16,15 @@ public:
     ~Game();
     
 		void createInformationBoard();
-    void renderInformationBoard() const;
+    //void renderInformationBoard() const;
+    void renderInformationBoard_classicMode() const;
 
     void createGameBoard();
     void renderGameBoard() const;
     
-		void createInstructionBoard();
-    void renderInstructionBoard() const;
+	void createInstructionBoard();
+    //void renderInstructionBoard() const;
+    void renderInstructionBoard_classicMode() const;
 		
 		void loadLeadBoard();
     void updateLeadBoard();
@@ -31,10 +33,14 @@ public:
     bool writeLeaderBoard();
     void renderLeaderBoard() const;
     
-		void renderBoards() const;
-    
+		//void renderBoards() const;
+    void renderBoards_classicMode() const;
+    void renderBoards_propMode() const;
+    void renderBoards_survivalMode() const;
 		void initializeGame();
     void runGame();
+    void runGame_propMode();
+    void runGame_survivalMode();
     void renderPoints() const;
     void renderDifficulty() const;
     
@@ -50,12 +56,11 @@ public:
     void setModeSelect(int mode);//设置模式，修改modeSelect的值
 
     //prop
-    void createRamdonProp();
+    void createRamdomProp();
     void selectProp(PropType prop);
     void ReserveSnake();
     void DecreaseSize();
     void AllowEatSelf();
-
 private:
     // We need to have two windows
     // One is for game introduction
@@ -86,7 +91,6 @@ private:
     //prop
     std::vector<SnakeBody> foodAndProp;
     PropType mPropType;
-    void Game::selectProp();
 };
 
 #endif
