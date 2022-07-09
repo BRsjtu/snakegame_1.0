@@ -46,7 +46,7 @@ public:
 		void startGame();
     bool renderRestartMenu() const;
     void adjustDelay();
-    
+    int getCurrentTime();//获取游戏进行的时间（单位：秒）
 
 private:
     // We need to have two windows
@@ -73,6 +73,7 @@ private:
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
+    int runTime;
 };
 
 #endif

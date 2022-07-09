@@ -434,7 +434,9 @@ bool Game::writeLeaderBoard()
     return true;
 }
 
-
+int Game::getCurrentTime() {
+    return runTime;
+}
 
 
 
