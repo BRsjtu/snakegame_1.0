@@ -124,6 +124,8 @@ bool Snake::touchFood()
     }
 }
 
+
+
 void Snake::senseFood(SnakeBody food)
 {
     this->mFood = food;
@@ -253,6 +255,7 @@ bool Snake::moveFoward()
     }
 }
 
+
 bool Snake::checkCollision()
 {
     if (this->hitWall() || this->hitSelf())
@@ -273,7 +276,91 @@ int Snake::getLength()
 
 //Prop
 
-bool Snake::isPartOfFoodOrProp(int x, int y)
+PropType SnakeBody::getPropType() const
+{
+    return this->mPropType;
+}
+
+bool Snake::isPartOfProp(int x, int y)
+{
+    SnakeBody temp = SnakeBody(x, y);
+        for (int i = 0; i < this->mSnake.size(); i ++)
+        {
+            if (this->mSnake[i] == temp)
+            {
+                return true;
+            }
+        }
+        return false;
+}
+
+void Snake::getMyProp(SnakeBody prop)
+{
+    this->mProp.insert(this->mProp.end(),prop);
+}
+
+void Snake::senseProp_PropMode(std::vector<SnakeBody> prop)
+{
+    this->mProp=prop;
+}
+
+bool Snake::touchProp_PropMode()
+{
+    SnakeBody newHead = this->createNewHead();
+    for(int i=0;i<this->mProp.size();i++)
+    {
+        if (this->mProp[i] == newHead)
+        {
+            this->mTouchedProp==this->mProp[i];
+            this->mPropType = this->mProp[i].getPropType();
+            return true;
+        }
+    }
+    return false;
+}
+
+void Snake::selectProp()
+{
+    switch (this->mPropType)
+    {
+    case PropType::reserveSnake:
+        this->ReserveSnake();
+        break;
+    case PropType::decreaseSize:
+        this->DecreaseSize();
+        break;
+    case PropType::allowEatSelf:
+        this->AllowEatSelf();
+        break;
+    default:
+        break;
+    }
+}
+
+bool Snake::moveFoward_PropMode()
+{
+    if (this->touchProp_PropMode())
+    {
+        SnakeBody newHead = this->mTouchedProp;
+        this->selectProp();
+
+        return true;
+    }
+    return false;
+}
+
+
+void Snake::ReserveSnake()
+{
+
+}
+
+void Snake::DecreaseSize()
+{
+
+}
+
+void Snake::AllowEatSelf()
 {
 
 }

@@ -58,10 +58,19 @@ public:
     std::vector<SnakeBody>& getSnake();
     int getLength();
     SnakeBody createNewHead();
+    void selectProp();
     bool moveFoward();
+    bool moveFoward_PropMode();
 
     //prop
-    bool isPartOfFoodOrProp(int x, int y);
+    bool isPartOfProp(int x, int y);
+    void getMyProp(SnakeBody prop);
+    void senseProp_PropMode(std::vector<SnakeBody> prop);
+    bool touchProp_PropMode();
+    void ReserveSnake();
+    void DecreaseSize();
+    void AllowEatSelf();
+
 
 private:
     const int mGameBoardWidth;
@@ -71,6 +80,10 @@ private:
     Direction mDirection;
     SnakeBody mFood;
     std::vector<SnakeBody> mSnake;
+    //Prop Part
+    std::vector<SnakeBody> mProp;
+    SnakeBody mTouchedProp;
+    PropType mPropType;
 };
 
 #endif

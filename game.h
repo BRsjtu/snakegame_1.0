@@ -58,9 +58,7 @@ public:
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
-    void ReserveSnake();
-    void DecreaseSize();
-    void AllowEatSelf();
+
 private:
     // We need to have two windows
     // One is for game introduction
@@ -89,7 +87,6 @@ private:
     //int runTime;
     int modeSelect;//1:classic mode£¬2:prop mode£¬3:survival mode
     //prop
-    std::vector<SnakeBody> foodAndProp;
     PropType mPropType;
 };
 

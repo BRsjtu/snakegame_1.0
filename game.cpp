@@ -596,7 +596,7 @@ void Game::createRamdomProp()
     {
         for (int j = 1; j < this->mGameBoardWidth - 1; j++)
         {
-            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfFoodOrProp(j, i))
+            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfProp(j, i))
             {
                 continue;
             }
@@ -623,46 +623,14 @@ void Game::createRamdomProp()
         newprop = PropType::allowEatSelf;
         break;
     }
-    this->foodAndProp.push_back(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
+    this->mPtrSnake->getMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
 
 }
 
 
 
 
-void Game::selectProp(PropType prop)
-{
-    switch (this->mPropType)
-    {
-    case PropType::reserveSnake:
-        this->ReserveSnake();
-        break;
-    case PropType::decreaseSize:
-        this->DecreaseSize();
-        break;
-    case PropType::allowEatSelf:
-        this->AllowEatSelf();
-        break;
-    default:
-        break;
-    }
-}
 
-
-void Game::ReserveSnake()
-{
-
-}
-
-void Game::DecreaseSize()
-{
-
-}
-
-void Game::AllowEatSelf()
-{
-
-}
 
 
 
