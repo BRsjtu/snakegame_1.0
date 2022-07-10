@@ -40,19 +40,32 @@ public:
     void renderBoards_classicMode() const;
     void renderBoards_propMode() const;
     void renderBoards_survivalMode() const;
+    void renderBoards_twoMode() const;
+
     void initializeGame();
     void initializeGame_propMode();
     void initializeGame_survivalMode();
+    void initializeGame_twoMode();
+
     void runGame();
     void runGame_propMode();
     void runGame_survivalMode();
+    void runGame_twoMode();
+
     void renderPoints() const;
+    void renderSurvivalTime() const;
     void renderDifficulty() const;
 
-		void createRamdonFood();
+	void createRamdonFood();
     void renderFood() const;
+
     void renderSnake() const;
+    void rendernSnake() const;
+
     void controlSnake() const;
+    void controlmSnake() const;
+    void controlnSnake() const;
+
 
 		void startGame();
     bool renderRestartMenu();//删除了const为了修改modeSelect
@@ -70,7 +83,7 @@ private:
     // We need to have two windows
     // One is for game introduction
     // One is for game mWindows
-    int survival_time;
+    int survival_time = 0;//生存时间
     int mScreenWidth;
     int mScreenHeight;
     int mGameBoardWidth;
@@ -84,6 +97,8 @@ private:
 
     const char mSnakeSymbol = '@';
     std::unique_ptr<Snake> mPtrSnake;
+    std::unique_ptr<Snake> nPtrSnake;
+
     // Food information
     SnakeBody mFood;
     const char mFoodSymbol = '#';
@@ -95,7 +110,7 @@ private:
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
     //int runTime;
-    int modeSelect;//1:classic mode，2:prop mode，3:survival mode
+    int modeSelect;//1:classic mode，2:prop mode，3:survival mode, 4:two-player mode
     
 };
 

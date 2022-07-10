@@ -175,7 +175,7 @@ bool Game::renderRestartMenu()
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "Quit" };
+    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "two-player mode","Quit"};
 
     int index = 0;
     int offset = 4;
@@ -190,6 +190,8 @@ bool Game::renderRestartMenu()
     mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
     wattroff(menu, A_STANDOUT);
     mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 4 + offset, 1, menuItems[4].c_str());
     wrefresh(menu);
 
     int key;
@@ -247,6 +249,11 @@ bool Game::renderRestartMenu()
         this->setModeSelect(3);//survival mode
         return true;
     }
+    else if (index == 3)
+    {
+        this->setModeSelect(4);//two-player mode
+        return true;
+    }
     else
     {
         return false;//quit
@@ -260,6 +267,13 @@ void Game::renderPoints() const
     mvwprintw(this->mWindows[2], 12, 1, pointString.c_str());
     wrefresh(this->mWindows[2]);
 }
+void Game::renderSurvivalTime() const
+{
+    std::string pointString = std::to_string(this->survival_time);
+    mvwprintw(this->mWindows[2], 12, 1, pointString.c_str());
+    wrefresh(this->mWindows[2]);
+}
+
 void Game::renderDifficulty() const
 {
     std::string difficultyString = std::to_string(this->mDifficulty);
@@ -294,7 +308,17 @@ void Game::initializeGame_survivalMode()
     this->mPoints = 0;
     this->mDelay = this->mBaseDelay;
 }
-
+void Game::initializeGame_twoMode()
+{
+    this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength,1));
+    this->nPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength,2));
+    this->createRamdonFood();
+    this->mPtrSnake->senseFood(this->mFood);
+    this->nPtrSnake->senseFood(this->mFood);
+    this->mDifficulty = 0;
+    this->mPoints = 0;
+    this->mDelay = this->mBaseDelay;
+}
 void Game::createRamdonFood()
 {
     std::vector<SnakeBody> availableGrids;
@@ -328,6 +352,17 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
+    for (int i = 0; i < snakeLength; i++)
+    {
+        mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
+    }
+    wrefresh(this->mWindows[1]);
+}
+
+void Game::rendernSnake() const
+{
+    int snakeLength = this->nPtrSnake->getLength();
+    std::vector<SnakeBody>& snake = this->nPtrSnake->getSnake();
     for (int i = 0; i < snakeLength; i++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
@@ -376,6 +411,95 @@ void Game::controlSnake() const
     }
 }
 
+void Game::controlmSnake() const
+{
+    int key;
+    key = getch();
+    switch (key)
+    {
+    case 'W':
+    case 'w':
+    {
+        this->mPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case 'S':
+    case 's':
+    {
+        this->mPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case 'A':
+    case 'a':
+    {
+        this->mPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case 'D':
+    case 'd':
+    {
+        this->mPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    case KEY_UP:
+    {
+        this->nPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case KEY_DOWN:
+    {
+        this->nPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case KEY_LEFT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case KEY_RIGHT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
+
+void Game::controlnSnake() const
+{
+    int key;
+    key = getch();
+    switch (key)
+    {
+    case KEY_UP:
+    {
+        this->nPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case KEY_DOWN:
+    {
+        this->nPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case KEY_LEFT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case KEY_RIGHT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
 //void Game::renderBoards() const
 void Game::renderBoards_classicMode() const
 {
@@ -421,6 +545,22 @@ void Game::renderBoards_survivalMode() const
     this->renderInformationBoard_survivalMode();
     this->renderGameBoard();
     this->renderInstructionBoard_survivalMode();
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        box(this->mWindows[i], 0, 0);
+        wrefresh(this->mWindows[i]);
+    }
+    this->renderLeaderBoard();
+}
+void Game::renderBoards_twoMode() const
+{
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        werase(this->mWindows[i]);
+    }
+    this->renderInformationBoard_classicMode();//todo
+    this->renderGameBoard();
+    this->renderInstructionBoard_classicMode();//todo
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
@@ -564,11 +704,53 @@ void Game::runGame_survivalMode()
         }
         this->renderFood();
         this->renderDifficulty();
+        this->renderSurvivalTime();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
     }
 }
+
+void Game::runGame_twoMode()
+{
+    bool moveSuccess;
+    int key;
+    while (true)
+    {
+        this->controlmSnake();
+        //this->controlnSnake();
+        werase(this->mWindows[1]);
+        box(this->mWindows[1], 0, 0);
+
+        bool meatFood = this->mPtrSnake->moveFoward();
+        bool neatFood = this->nPtrSnake->moveFoward();
+
+        bool mcollision = this->mPtrSnake->checkCollision();
+        bool ncollision = this->nPtrSnake->checkCollision();
+
+        if (mcollision == true || ncollision == true)
+        {
+            break;
+        }
+        this->renderSnake();
+        this->rendernSnake();
+        if (meatFood == true|| neatFood == true)
+        {
+            this->mPoints += 1;
+            this->createRamdonFood();
+            this->mPtrSnake->senseFood(this->mFood);
+            this->adjustDelay();
+        }
+        this->renderFood();
+        this->renderDifficulty();
+        this->renderPoints();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
+
+        refresh();
+    }
+}
+
 void Game::startGame()
 {
     refresh();
@@ -612,6 +794,17 @@ void Game::startGame()
                 this->renderBoards_survivalMode();
                 this->initializeGame_survivalMode();
                 this->runGame_survivalMode();
+                this->updateLeaderBoard();
+                this->writeLeaderBoard();
+                choice = this->renderRestartMenu();
+                break;
+            }
+            case 4://4:two-player mode
+            {
+                this->readLeaderBoard();
+                this->renderBoards_twoMode();
+                this->initializeGame_twoMode();
+                this->runGame_twoMode();
                 this->updateLeaderBoard();
                 this->writeLeaderBoard();
                 choice = this->renderRestartMenu();

@@ -40,6 +40,12 @@ Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength): m
     this->setRandomSeed();
 }
 
+Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength,int mn) : mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength),player(mn)
+{
+    this->initializemnSnake(mn);
+    this->setRandomSeed();
+}
+
 void Snake::setRandomSeed()
 {
     // use current time as seed for random generator
@@ -59,6 +65,26 @@ void Snake::initializeSnake()
     }
     this->mDirection = Direction::Up;
 }
+
+void Snake::initializemnSnake(int mn)
+{
+    // Instead of using a random initialization algorithm
+    // We always put the snake at the center of the game mWindows
+    int centerX = this->mGameBoardWidth / 2;
+    int centerY = this->mGameBoardHeight / 2;
+    if (mn == 1) {
+        centerX -= 5;
+    }
+    else if (mn == 2) {
+        centerX += 5;
+    }
+    for (int i = 0; i < this->mInitialSnakeLength; i++)
+    {
+        this->mSnake.push_back(SnakeBody(centerX, centerY + i));
+    }
+    this->mDirection = Direction::Up;
+}
+
 
 bool Snake::isPartOfSnake(int x, int y)
 {

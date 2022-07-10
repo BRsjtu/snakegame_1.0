@@ -40,10 +40,14 @@ class Snake
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength);
+    Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength,int mn);
+
     // Set random seed
     void setRandomSeed();
     // Initialize snake
     void initializeSnake();
+    void initializemnSnake(int mn);
+
     // Check if the snake is on the coordinate
     // bool isSnakeOn(int x, int y);
     // Checking API for generating random food
@@ -87,6 +91,7 @@ private:
     SnakeBody mTouchedProp;
     PropType mPropType;
     bool ifCanEatSelf;
+    int player;//1ÊÇm£¬2ÊÇn
 };
 
 #endif
