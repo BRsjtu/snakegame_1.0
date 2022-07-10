@@ -65,11 +65,13 @@ public:
     //prop
     bool isPartOfProp(int x, int y);
     void getMyProp(SnakeBody prop);
-    void senseProp_PropMode(std::vector<SnakeBody> prop);
+    //void senseProp_PropMode(std::vector<SnakeBody> prop);
     bool touchProp_PropMode();
     void ReserveSnake();
     void DecreaseSize();
     void AllowEatSelf();
+    bool checkCollision_AllowEatSelf();
+    bool getIfCanEatSelf();
 
 
 private:
@@ -84,6 +86,7 @@ private:
     std::vector<SnakeBody> mProp;
     SnakeBody mTouchedProp;
     PropType mPropType;
+    bool ifCanEatSelf;
 };
 
 #endif

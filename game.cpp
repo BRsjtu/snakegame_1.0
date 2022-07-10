@@ -486,12 +486,23 @@ void Game::runGame_propMode()
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-
+        bool eatProp = this->mPtrSnake->moveFoward_PropMode();
         bool eatFood = this->mPtrSnake->moveFoward();
         bool collision = this->mPtrSnake->checkCollision();
-        if (collision == true)
+        if(this->mPtrSnake->getIfCanEatSelf())
         {
             break;
+            if(this->mPtrSnake->checkCollision_AllowEatSelf())
+            {
+                break;
+            }
+        }
+        else
+        {
+            if (this->mPtrSnake->checkCollision())
+            {
+                break;
+            }
         }
         this->renderSnake();
         if (eatFood == true)
@@ -499,6 +510,14 @@ void Game::runGame_propMode()
             this->mPoints += 1;
             this->createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
+            this->adjustDelay();
+        }
+        if (eatProp == true)
+        {
+            this->mPoints += 1;
+            this->createRamdomProp();
+            //this->mPtrSnake->senseProp_PropMode(this->mPtrSnake->);
+            //this->createRamdomProp();
             this->adjustDelay();
         }
         this->renderFood();
@@ -674,7 +693,7 @@ void Game::createRamdomProp()
     {
         for (int j = 1; j < this->mGameBoardWidth - 1; j++)
         {
-            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfProp(j, i))
+            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfProp(j, i) || this->mFood == SnakeBody(j,i))
             {
                 continue;
             }
@@ -703,6 +722,29 @@ void Game::createRamdomProp()
     }
     this->mPtrSnake->getMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
 
+}
+
+void Game::createRamdomFood_PorpMode()
+{
+    std::vector<SnakeBody> availableGrids;
+    for (int i = 1; i < this->mGameBoardHeight - 1; i++)
+    {
+        for (int j = 1; j < this->mGameBoardWidth - 1; j++)
+        {
+            if (this->mPtrSnake->isPartOfSnake(j, i)|| this->mPtrSnake->isPartOfProp(j,i))
+            {
+                continue;
+            }
+            else
+            {
+                availableGrids.push_back(SnakeBody(j, i));
+            }
+        }
+    }
+
+    // Randomly select a grid that is not occupied by the snake
+    int random_idx = std::rand() % availableGrids.size();
+    this->mFood = availableGrids[random_idx];
 }
 
 

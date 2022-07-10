@@ -295,9 +295,9 @@ PropType SnakeBody::getPropType() const
 bool Snake::isPartOfProp(int x, int y)
 {
     SnakeBody temp = SnakeBody(x, y);
-        for (int i = 0; i < this->mSnake.size(); i ++)
+        for (int i = 0; i < this->mProp.size(); i ++)
         {
-            if (this->mSnake[i] == temp)
+            if (this->mProp[i] == temp)
             {
                 return true;
             }
@@ -310,10 +310,10 @@ void Snake::getMyProp(SnakeBody prop)
     this->mProp.insert(this->mProp.end(),prop);
 }
 
-void Snake::senseProp_PropMode(std::vector<SnakeBody> prop)
-{
-    this->mProp=prop;
-}
+// void Snake::senseProp_PropMode(std::vector<SnakeBody> prop)
+// {
+//     this->mProp=prop;
+// }
 
 bool Snake::touchProp_PropMode()
 {
@@ -363,15 +363,37 @@ bool Snake::moveFoward_PropMode()
 
 void Snake::ReserveSnake()
 {
-
+    std::vector<SnakeBody> reserveSnake;
+    for(int i = this->mSnake.size() - 1; i>=0; i --)
+    {
+        reserveSnake.push_back(this->mSnake[i]);
+    }
+    this->mSnake = reserveSnake;
 }
 
 void Snake::DecreaseSize()
 {
-
+    this->mSnake.pop_back();
 }
 
 void Snake::AllowEatSelf()
 {
+    this->ifCanEatSelf = ~this->ifCanEatSelf;
+}
 
+bool Snake::checkCollision_AllowEatSelf()
+{
+    if(this->hitWall())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Snake::getIfCanEatSelf()
+{
+    return this->ifCanEatSelf;
 }

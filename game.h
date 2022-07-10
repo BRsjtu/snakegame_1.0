@@ -63,6 +63,8 @@ public:
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
+    void createRamdomFood_PorpMode();
+    //survive
     void adjustDelay_SurvivalMode();
 private:
     // We need to have two windows
@@ -94,8 +96,7 @@ private:
     const int mNumLeaders = 3;
     //int runTime;
     int modeSelect;//1:classic mode£¬2:prop mode£¬3:survival mode
-    //prop
-    PropType mPropType;
+    
 };
 
 #endif
