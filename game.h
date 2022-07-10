@@ -18,13 +18,16 @@ public:
 		void createInformationBoard();
     //void renderInformationBoard() const;
     void renderInformationBoard_classicMode() const;
-
+    void renderInformationBoard_propMode() const;
+    void renderInformationBoard_survivalMode() const;
     void createGameBoard();
     void renderGameBoard() const;
 
 	void createInstructionBoard();
     //void renderInstructionBoard() const;
     void renderInstructionBoard_classicMode() const;
+    void renderInstructionBoard_propMode() const;
+    void renderInstructionBoard_survivalMode() const;
 
 		void loadLeadBoard();
     void updateLeadBoard();
@@ -37,7 +40,9 @@ public:
     void renderBoards_classicMode() const;
     void renderBoards_propMode() const;
     void renderBoards_survivalMode() const;
-		void initializeGame();
+    void initializeGame();
+    void initializeGame_propMode();
+    void initializeGame_survivalMode();
     void runGame();
     void runGame_propMode();
     void runGame_survivalMode();
@@ -58,7 +63,7 @@ public:
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
-    void adjustDelay_SurvivalMode;
+    void adjustDelay_SurvivalMode();
 private:
     // We need to have two windows
     // One is for game introduction
@@ -73,6 +78,8 @@ private:
     std::vector<WINDOW *> mWindows;
     // Snake information
     const int mInitialSnakeLength = 2;
+    const int mInitialSnakeLength_survivalMode = 5;
+
     const char mSnakeSymbol = '@';
     std::unique_ptr<Snake> mPtrSnake;
     // Food information
