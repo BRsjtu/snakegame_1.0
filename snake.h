@@ -68,7 +68,7 @@ public:
     bool moveFoward_SurvivalMode();
     //prop
     bool isPartOfProp(int x, int y);
-    void getMyProp(SnakeBody prop);
+    void setMyProp(SnakeBody prop);
     //void senseProp_PropMode(std::vector<SnakeBody> prop);
     bool touchProp_PropMode();
     void ReserveSnake();
@@ -76,6 +76,8 @@ public:
     void AllowEatSelf();
     bool checkCollision_AllowEatSelf();
     bool getIfCanEatSelf();
+    void moveFoward_EatSelf();
+    std::vector<SnakeBody> getMyProp () const;
 
 
 private:
@@ -91,7 +93,7 @@ private:
     SnakeBody mTouchedProp;
     PropType mPropType;
     bool ifCanEatSelf;
-    int player;//1ÊÇm£¬2ÊÇn
+    int player;//1ï¿½ï¿½mï¿½ï¿½2ï¿½ï¿½n
 };
 
 #endif

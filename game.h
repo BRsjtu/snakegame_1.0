@@ -68,22 +68,24 @@ public:
 
 
 		void startGame();
-    bool renderRestartMenu();//É¾³ýÁËconstÎªÁËÐÞ¸ÄmodeSelect
+    bool renderRestartMenu();//É¾ï¿½ï¿½ï¿½ï¿½constÎªï¿½ï¿½ï¿½Þ¸ï¿½modeSelect
     void adjustDelay();
-    //int getCurrentTime();//»ñÈ¡ÓÎÏ·½øÐÐµÄÊ±¼ä£¨µ¥Î»£ºÃë£©
-    void setModeSelect(int mode);//ÉèÖÃÄ£Ê½£¬ÐÞ¸ÄmodeSelectµÄÖµ
+    //int getCurrentTime();//ï¿½ï¿½È¡ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Ðµï¿½Ê±ï¿½ä£¨ï¿½ï¿½Î»ï¿½ï¿½ï¿½ë£©
+    void setModeSelect(int mode);//ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½Þ¸ï¿½modeSelectï¿½ï¿½Öµ
 
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
     void createRamdomFood_PorpMode();
+    void renderProp() const;
+
     //survive
     void adjustDelay_SurvivalMode();
 private:
     // We need to have two windows
     // One is for game introduction
     // One is for game mWindows
-    int survival_time = 0;//Éú´æÊ±¼ä
+    int survival_time = 0;//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
     int mScreenWidth;
     int mScreenHeight;
     int mGameBoardWidth;
@@ -110,8 +112,11 @@ private:
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
     //int runTime;
-    int modeSelect;//1:classic mode£¬2:prop mode£¬3:survival mode, 4:two-player mode
+    int modeSelect;//1:classic modeï¿½ï¿½2:prop modeï¿½ï¿½3:survival mode, 4:two-player mode
     
+    const char mPropSymbolReserve = '$';
+    const char mPropSymbolDecrease = '%';
+    const char mPropSymbolAllow = '&';
 };
 
 #endif

@@ -293,8 +293,9 @@ void Game::initializeGame()
 void Game::initializeGame_propMode()
 {
     this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength));
-    this->createRamdonFood();
+    this->createRamdomFood_PorpMode();
     this->mPtrSnake->senseFood(this->mFood);
+    this->createRamdomProp();
     this->mDifficulty = 0;
     this->mPoints = 0;
     this->mDelay = this->mBaseDelay;
@@ -626,12 +627,11 @@ void Game::runGame_propMode()
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-        bool eatProp = this->mPtrSnake->moveFoward_PropMode();
-        bool eatFood = this->mPtrSnake->moveFoward();
-        bool collision = this->mPtrSnake->checkCollision();
+        bool eatProp = this->mPtrSnake->moveFoward_PropMode();//检测是否能吃到道具
+        bool eatFood = this->mPtrSnake->moveFoward();//检测是否能吃到食物
+        //判断此时蛇能否吃掉自己
         if(this->mPtrSnake->getIfCanEatSelf())
         {
-            break;
             if(this->mPtrSnake->checkCollision_AllowEatSelf())
             {
                 break;
@@ -648,7 +648,7 @@ void Game::runGame_propMode()
         if (eatFood == true)
         {
             this->mPoints += 1;
-            this->createRamdonFood();
+            this->createRamdomFood_PorpMode();
             this->mPtrSnake->senseFood(this->mFood);
             this->adjustDelay();
         }
@@ -656,11 +656,10 @@ void Game::runGame_propMode()
         {
             this->mPoints += 1;
             this->createRamdomProp();
-            //this->mPtrSnake->senseProp_PropMode(this->mPtrSnake->);
-            //this->createRamdomProp();
             this->adjustDelay();
         }
         this->renderFood();
+        this->renderProp();
         this->renderDifficulty();
         this->renderPoints();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
@@ -878,7 +877,7 @@ void Game::setModeSelect(int mode) {
 }
 
 //Prop part
-
+//随机创造道具的函数
 void Game::createRamdomProp()
 {
     std::vector<SnakeBody> availableGrids;
@@ -898,8 +897,8 @@ void Game::createRamdomProp()
     }
 
     // Randomly select a grid that is not occupied by the snake
-    int random_idx = std::rand() % availableGrids.size();
-    int random_prop = std::rand() % 3 - 1;
+    int random_idx = std::rand() % availableGrids.size();//获取道具位置
+    int random_prop = std::rand() % 3 ;//获取道具类型
     PropType newprop;
     switch (random_prop)
     {
@@ -913,10 +912,10 @@ void Game::createRamdomProp()
         newprop = PropType::allowEatSelf;
         break;
     }
-    this->mPtrSnake->getMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
-
+    this->mPtrSnake->setMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
 }
 
+//道具模式中创造食物
 void Game::createRamdomFood_PorpMode()
 {
     std::vector<SnakeBody> availableGrids;
@@ -940,8 +939,28 @@ void Game::createRamdomFood_PorpMode()
     this->mFood = availableGrids[random_idx];
 }
 
-
-
+void Game::renderProp() const
+{
+    std::vector<SnakeBody> prop = this->mPtrSnake->getMyProp();
+    for(int i = 0; i < prop.size(); i++)
+    {
+        if(prop[i].getPropType() == PropType::reserveSnake)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolReserve);
+        }
+        if(prop[i].getPropType() == PropType::decreaseSize)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolDecrease);
+        }
+        if(prop[i].getPropType() == PropType::allowEatSelf)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolAllow);
+        }
+        
+    }
+    
+    wrefresh(this->mWindows[1]);
+}
 
 
 
