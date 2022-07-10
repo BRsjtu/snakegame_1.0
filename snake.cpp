@@ -287,6 +287,11 @@ int Snake::getLength()
 
 //Prop
 
+std::vector<SnakeBody> Snake::getMyProp () const
+{
+    return this->mProp;
+}
+
 PropType SnakeBody::getPropType() const
 {
     return this->mPropType;
@@ -305,7 +310,7 @@ bool Snake::isPartOfProp(int x, int y)
         return false;
 }
 
-void Snake::getMyProp(SnakeBody prop)
+void Snake::setMyProp(SnakeBody prop)
 {
     this->mProp.insert(this->mProp.end(),prop);
 }
@@ -353,11 +358,36 @@ bool Snake::moveFoward_PropMode()
     if (this->touchProp_PropMode())
     {
         SnakeBody newHead = this->mTouchedProp;
+        this->mProp.pop_back();
         this->selectProp();
 
         return true;
     }
+    if(this->ifCanEatSelf)
+    {
+        this->moveFoward_EatSelf();
+        return false;
+    }
     return false;
+}
+
+void Snake::moveFoward_EatSelf()
+{
+    SnakeBody newHead = this->createNewHead();
+    if(this->hitSelf())
+    {
+        for(int i=0; i<this->mSnake.size();i++)
+        {
+            if(newHead == this->mSnake[i])
+            {
+                for(int j=i; i<this->mSnake.size();i++)
+                {
+                    this->mSnake.pop_back();
+                }
+            }
+        }
+    }
+    
 }
 
 
@@ -369,6 +399,23 @@ void Snake::ReserveSnake()
         reserveSnake.push_back(this->mSnake[i]);
     }
     this->mSnake = reserveSnake;
+    if(this->mSnake[0].getX() - this->mSnake[1].getX() == 1)
+    {
+        this->mDirection = Direction::Right;
+    }
+    if(this->mSnake[0].getX() - this->mSnake[1].getX() == -1)
+    {
+        this->mDirection = Direction::Left;
+    }
+    if(this->mSnake[0].getY() - this->mSnake[1].getY() == 1)
+    {
+        this->mDirection = Direction::Down;
+    }
+    if(this->mSnake[0].getY() - this->mSnake[1].getY() == -1)
+    {
+        this->mDirection = Direction::Up;
+    }
+
 }
 
 void Snake::DecreaseSize()
@@ -380,6 +427,8 @@ void Snake::AllowEatSelf()
 {
     this->ifCanEatSelf = ~this->ifCanEatSelf;
 }
+
+
 
 bool Snake::checkCollision_AllowEatSelf()
 {
