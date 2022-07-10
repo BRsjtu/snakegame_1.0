@@ -14,25 +14,25 @@ class Game
 public:
     Game();
     ~Game();
-    
+
 		void createInformationBoard();
     //void renderInformationBoard() const;
     void renderInformationBoard_classicMode() const;
 
     void createGameBoard();
     void renderGameBoard() const;
-    
+
 	void createInstructionBoard();
     //void renderInstructionBoard() const;
     void renderInstructionBoard_classicMode() const;
-		
+
 		void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
     bool updateLeaderBoard();
     bool writeLeaderBoard();
     void renderLeaderBoard() const;
-    
+
 		//void renderBoards() const;
     void renderBoards_classicMode() const;
     void renderBoards_propMode() const;
@@ -43,12 +43,12 @@ public:
     void runGame_survivalMode();
     void renderPoints() const;
     void renderDifficulty() const;
-    
+
 		void createRamdonFood();
     void renderFood() const;
     void renderSnake() const;
     void controlSnake() const;
-    
+
 		void startGame();
     bool renderRestartMenu();//删除了const为了修改modeSelect
     void adjustDelay();
@@ -58,11 +58,12 @@ public:
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
-
+    void adjustDelay_SurvivalMode;
 private:
     // We need to have two windows
     // One is for game introduction
     // One is for game mWindows
+    int survival_time;
     int mScreenWidth;
     int mScreenHeight;
     int mGameBoardWidth;

@@ -1,16 +1,16 @@
 ﻿#include <string>
 #include <iostream>
-#include <cmath> 
+#include <cmath>
 
 // For terminal delay
 #include <chrono>
 #include <thread>
 
 #include <fstream>
-#include <algorithm> 
-
+#include <algorithm>
+#include<ctime>
 #include "game.h"
-
+clock_t start,now;
 Game::Game()
 {
     // Separate the screen to three windows
@@ -100,7 +100,7 @@ void Game::renderInstructionBoard_classicMode() const
 
 void Game::renderLeaderBoard() const
 {
-    // If there is not too much space, skip rendering the leader board 
+    // If there is not too much space, skip rendering the leader board
     if (this->mScreenHeight - this->mInformationHeight - 14 - 2 < 3 * 2)
     {
         return;
@@ -200,7 +200,7 @@ bool Game::renderRestartMenu()
         this->setModeSelect(3);//survival mode
         return true;
     }
-    else 
+    else
     {
         return false;//quit
     }
@@ -213,7 +213,6 @@ void Game::renderPoints() const
     mvwprintw(this->mWindows[2], 12, 1, pointString.c_str());
     wrefresh(this->mWindows[2]);
 }
-
 void Game::renderDifficulty() const
 {
     std::string difficultyString = std::to_string(this->mDifficulty);
@@ -364,7 +363,7 @@ void Game::renderBoards_survivalMode() const
     }
     this->renderLeaderBoard();
 }
-    
+
 void Game::adjustDelay()
 {
     this->mDifficulty = this->mPoints / 5;
@@ -373,7 +372,12 @@ void Game::adjustDelay()
         this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
     }
 }
-
+void Game::adjustDelay_SurvivalMode(){
+    this->mDifficulty = this->survival_time / 10; //该值需调试，10的话可能难度偏高（十秒加快一次）
+    if(survival_time % 10 == 0){
+        this->mDelay = this->mBaseDelay * pow(0.75,this->mDifficulty);
+    }
+}
 void Game::runGame()
 {
     bool moveSuccess;
@@ -443,31 +447,39 @@ void Game::runGame_propMode()
 
 void Game::runGame_survivalMode()
 {
-    bool moveSuccess;
-    int key;
+    start=clock();//计时开始
+    int count_time=0;//用于计算的时间（int类型）
     while (true)
     {
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-
-        bool eatFood = this->mPtrSnake->moveFoward();
+        const int longer_time = 2;//蛇长度变长的时间
+        const int food_time=4;//每隔4s产生一个道具
+        now=clock();//获取实时时间
+        double survived_time=(double)((now-start)/CLOCKS_PER_SEC-count_time);//生存的时间（double类型）
+        if(survived_time>=1){
+            count_time++;
+        }
+        this->survival_time = count_time;//survival_time是game类里面的时间
+        if(count_time%longer_time==0){
+            this->mPtrSnake->creatNewHead();
+        }
+        bool eatFood = this->mPtrSnake->moveFoward_survivalMode();
         bool collision = this->mPtrSnake->checkCollision();
         if (collision == true)
         {
             break;
         }
         this->renderSnake();
-        if (eatFood == true)
+        if (eatFood == true&&count_time%food_time==0)
         {
-            this->mPoints += 1;
             this->createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
             this->adjustDelay();
         }
         this->renderFood();
         this->renderDifficulty();
-        this->renderPoints();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();

@@ -61,7 +61,7 @@ public:
     void selectProp();
     bool moveFoward();
     bool moveFoward_PropMode();
-
+    bool moveFoward_SurvivalMode();
     //prop
     bool isPartOfProp(int x, int y);
     void getMyProp(SnakeBody prop);

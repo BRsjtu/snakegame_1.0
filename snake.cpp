@@ -243,18 +243,29 @@ bool Snake::moveFoward()
     if (this->touchFood())
     {
         SnakeBody newHead = this->mFood;
-        this->mSnake.insert(this->mSnake.begin(), newHead); 
+        this->mSnake.insert(this->mSnake.begin(), newHead);
         return true;
     }
     else
     {
         this->mSnake.pop_back();
         SnakeBody newHead = this->createNewHead();
-        this->mSnake.insert(this->mSnake.begin(), newHead); 
+        this->mSnake.insert(this->mSnake.begin(), newHead);
         return false;
     }
 }
-
+bool Snake::moveFoward_SurvivalMode(){
+    if(this->touchFood()){
+        this->mSnake.pop_back();
+        return true;
+    }
+    else{
+        this->mSnake.pop_back();
+        SnakeBody newHead = this->createNewHead();
+        this->mSnake.insert(this->mSnake.begin(),newHead);
+        return false;
+    }
+}
 
 bool Snake::checkCollision()
 {
