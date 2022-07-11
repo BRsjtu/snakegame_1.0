@@ -40,6 +40,12 @@ Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength): m
     this->setRandomSeed();
 }
 
+Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength,int mn) : mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength),player(mn)
+{
+    this->initializemnSnake(mn);
+    this->setRandomSeed();
+}
+
 void Snake::setRandomSeed()
 {
     // use current time as seed for random generator
@@ -59,6 +65,26 @@ void Snake::initializeSnake()
     }
     this->mDirection = Direction::Up;
 }
+
+void Snake::initializemnSnake(int mn)
+{
+    // Instead of using a random initialization algorithm
+    // We always put the snake at the center of the game mWindows
+    int centerX = this->mGameBoardWidth / 2;
+    int centerY = this->mGameBoardHeight / 2;
+    if (mn == 1) {
+        centerX -= 5;
+    }
+    else if (mn == 2) {
+        centerX += 5;
+    }
+    for (int i = 0; i < this->mInitialSnakeLength; i++)
+    {
+        this->mSnake.push_back(SnakeBody(centerX, centerY + i));
+    }
+    this->mDirection = Direction::Up;
+}
+
 
 bool Snake::isPartOfSnake(int x, int y)
 {
@@ -291,6 +317,11 @@ int Snake::getLength()
 
 //Prop
 
+std::vector<SnakeBody> Snake::getMyProp () const
+{
+    return this->mProp;
+}
+
 PropType SnakeBody::getPropType() const
 {
     return this->mPropType;
@@ -299,9 +330,9 @@ PropType SnakeBody::getPropType() const
 bool Snake::isPartOfProp(int x, int y)
 {
     SnakeBody temp = SnakeBody(x, y);
-        for (int i = 0; i < this->mSnake.size(); i ++)
+        for (int i = 0; i < this->mProp.size(); i ++)
         {
-            if (this->mSnake[i] == temp)
+            if (this->mProp[i] == temp)
             {
                 return true;
             }
@@ -309,15 +340,15 @@ bool Snake::isPartOfProp(int x, int y)
         return false;
 }
 
-void Snake::getMyProp(SnakeBody prop)
+void Snake::setMyProp(SnakeBody prop)
 {
     this->mProp.insert(this->mProp.end(),prop);
 }
 
-void Snake::senseProp_PropMode(std::vector<SnakeBody> prop)
-{
-    this->mProp=prop;
-}
+// void Snake::senseProp_PropMode(std::vector<SnakeBody> prop)
+// {
+//     this->mProp=prop;
+// }
 
 bool Snake::touchProp_PropMode()
 {
@@ -357,25 +388,93 @@ bool Snake::moveFoward_PropMode()
     if (this->touchProp_PropMode())
     {
         SnakeBody newHead = this->mTouchedProp;
+        this->mProp.pop_back();
         this->selectProp();
 
         return true;
     }
+    if(this->ifCanEatSelf)
+    {
+        this->moveFoward_EatSelf();
+        return false;
+    }
     return false;
+}
+
+void Snake::moveFoward_EatSelf()
+{
+    SnakeBody newHead = this->createNewHead();
+    if(this->hitSelf())
+    {
+        for(int i=0; i<this->mSnake.size();i++)
+        {
+            if(newHead == this->mSnake[i])
+            {
+                int length = this->mSnake.size();
+
+                for(int j=i; i<length;i++)
+                {
+                    this->mSnake.pop_back();
+                }
+            }
+        }
+    }
+    
 }
 
 
 void Snake::ReserveSnake()
 {
+    std::vector<SnakeBody> reserveSnake;
+    for(int i = this->mSnake.size() - 1; i>=0; i --)
+    {
+        reserveSnake.push_back(this->mSnake[i]);
+    }
+    this->mSnake = reserveSnake;
+    if(this->mSnake[0].getX() - this->mSnake[1].getX() == 1)
+    {
+        this->mDirection = Direction::Right;
+    }
+    if(this->mSnake[0].getX() - this->mSnake[1].getX() == -1)
+    {
+        this->mDirection = Direction::Left;
+    }
+    if(this->mSnake[0].getY() - this->mSnake[1].getY() == 1)
+    {
+        this->mDirection = Direction::Down;
+    }
+    if(this->mSnake[0].getY() - this->mSnake[1].getY() == -1)
+    {
+        this->mDirection = Direction::Up;
+    }
 
 }
 
 void Snake::DecreaseSize()
 {
-
+    this->mSnake.pop_back();
 }
 
 void Snake::AllowEatSelf()
 {
+    this->ifCanEatSelf = ~this->ifCanEatSelf;
+}
 
+
+
+bool Snake::checkCollision_AllowEatSelf()
+{
+    if(this->hitWall())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Snake::getIfCanEatSelf()
+{
+    return this->ifCanEatSelf;
 }

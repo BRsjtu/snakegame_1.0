@@ -40,10 +40,14 @@ class Snake
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength);
+    Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength,int mn);
+
     // Set random seed
     void setRandomSeed();
     // Initialize snake
     void initializeSnake();
+    void initializemnSnake(int mn);
+
     // Check if the snake is on the coordinate
     // bool isSnakeOn(int x, int y);
     // Checking API for generating random food
@@ -64,14 +68,17 @@ public:
     bool moveFoward_SurvivalMode();
     //prop
     bool isPartOfProp(int x, int y);
-    void getMyProp(SnakeBody prop);
-    void senseProp_PropMode(std::vector<SnakeBody> prop);
+    void setMyProp(SnakeBody prop);
+    //void senseProp_PropMode(std::vector<SnakeBody> prop);
+    std::vector<SnakeBody> getMyProp () const;
     bool touchProp_PropMode();
     void ReserveSnake();
     void DecreaseSize();
     void AllowEatSelf();
     void addHead();
-
+    bool checkCollision_AllowEatSelf();
+    bool getIfCanEatSelf();
+    void moveFoward_EatSelf();
 private:
     const int mGameBoardWidth;
     const int mGameBoardHeight;
@@ -84,6 +91,8 @@ private:
     std::vector<SnakeBody> mProp;
     SnakeBody mTouchedProp;
     PropType mPropType;
+    bool ifCanEatSelf;
+    int player;//1��m��2��n
 };
 
 #endif

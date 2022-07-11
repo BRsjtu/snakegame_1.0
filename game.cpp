@@ -1,14 +1,12 @@
 ﻿#include <string>
 #include <iostream>
 #include <cmath>
-
 // For terminal delay
 #include <chrono>
 #include <thread>
-
 #include <fstream>
 #include <algorithm>
-#include<ctime>
+#include <ctime>
 #include "game.h"
 
 Game::Game()
@@ -56,20 +54,30 @@ void Game::createInformationBoard()
 //void Game::renderInformationBoard() const
 void Game::renderInformationBoard_classicMode() const
 {
-    mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
+    mvwprintw(this->mWindows[0], 1, 1, "This is classic snakegame mode!");
     mvwprintw(this->mWindows[0], 2, 1, "Author: Lei Mao");
     mvwprintw(this->mWindows[0], 3, 1, "Website: https://github.com/leimao/");
     mvwprintw(this->mWindows[0], 4, 1, "Implemented using C++ and libncurses library.");
     wrefresh(this->mWindows[0]);
 }
-void Game::renderInformationBoard_survivalMode() const
+
+void Game::renderInformationBoard_propMode() const
 {
-    mvwprintw(this->mWindows[0], 1, 1, "Welcome to survival mode!");
-    mvwprintw(this->mWindows[0], 2, 1, "Author: Zeng Qiwen");
-    mvwprintw(this->mWindows[0], 3, 1, "Try your best to be alive");
-    mvwprintw(this->mWindows[0], 4, 1, "Implemented using C++ and libncurses library.");
+    mvwprintw(this->mWindows[0], 1, 1, "This is prop mode!");
+    mvwprintw(this->mWindows[0], 2, 1, "Author: Su Yingsheng");
+    mvwprintw(this->mWindows[0], 3, 1, "Website: https://github.com/BRsjtu/snakegame_1.0");
+    mvwprintw(this->mWindows[0], 4, 1, "You can touch different props to have corresponding ability.");
     wrefresh(this->mWindows[0]);
 }
+void Game::renderInformationBoard_survivalMode() const
+{
+    mvwprintw(this->mWindows[0], 1, 1, "This is survival mode!");
+    mvwprintw(this->mWindows[0], 2, 1, "Author: Zeng Qiwen");
+    mvwprintw(this->mWindows[0], 3, 1, "Website: https://github.com/BRsjtu/snakegame_1.0");
+    mvwprintw(this->mWindows[0], 4, 1, "Try to keep your snake as shorter as possible.");
+    wrefresh(this->mWindows[0]);
+}
+
 void Game::createGameBoard()
 {
     int startY = this->mInformationHeight;
@@ -105,6 +113,37 @@ void Game::renderInstructionBoard_classicMode() const
 }
 
 
+void Game::renderInstructionBoard_propMode() const
+{
+    mvwprintw(this->mWindows[2], 1, 1, "Manual");
+
+    mvwprintw(this->mWindows[2], 3, 1, "reserve snake: $");
+    mvwprintw(this->mWindows[2], 4, 1, "decrease length: %");
+    mvwprintw(this->mWindows[2], 5, 1, "can or can't eat yourself: &");
+    mvwprintw(this->mWindows[2], 6, 1, "more prop...");
+
+    mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
+    mvwprintw(this->mWindows[2], 11, 1, "Points");
+
+    wrefresh(this->mWindows[2]);
+}
+
+
+void Game::renderInstructionBoard_survivalMode() const
+{
+    mvwprintw(this->mWindows[2], 1, 1, "Manual");
+
+    mvwprintw(this->mWindows[2], 3, 1, "length increasing");
+    mvwprintw(this->mWindows[2], 4, 1, "food decrease length");
+    mvwprintw(this->mWindows[2], 5, 1, "length to 2");
+    mvwprintw(this->mWindows[2], 6, 1, "go into the door");
+
+    mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
+    mvwprintw(this->mWindows[2], 11, 1, "Time");
+
+    wrefresh(this->mWindows[2]);
+}
+
 void Game::renderLeaderBoard() const
 {
     // If there is not too much space, skip rendering the leader board
@@ -135,7 +174,7 @@ bool Game::renderRestartMenu()
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "Quit" };
+    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "two-player mode","Quit"};
 
     int index = 0;
     int offset = 4;
@@ -150,6 +189,8 @@ bool Game::renderRestartMenu()
     mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
     wattroff(menu, A_STANDOUT);
     mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 4 + offset, 1, menuItems[4].c_str());
     wrefresh(menu);
 
     int key;
@@ -207,6 +248,11 @@ bool Game::renderRestartMenu()
         this->setModeSelect(3);//survival mode
         return true;
     }
+    else if (index == 3)
+    {
+        this->setModeSelect(4);//two-player mode
+        return true;
+    }
     else
     {
         return false;//quit
@@ -220,6 +266,8 @@ void Game::renderPoints() const
     mvwprintw(this->mWindows[2], 12, 1, pointString.c_str());
     wrefresh(this->mWindows[2]);
 }
+
+
 void Game::renderDifficulty() const
 {
     std::string difficultyString = std::to_string(this->mDifficulty);
@@ -236,7 +284,36 @@ void Game::initializeGame()
     this->mPoints = 0;
     this->mDelay = this->mBaseDelay;
 }
-
+void Game::initializeGame_propMode()
+{
+    this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength));
+    this->createRamdomFood_PorpMode();
+    this->mPtrSnake->senseFood(this->mFood);
+    this->createRamdomProp();
+    this->mDifficulty = 0;
+    this->mPoints = 0;
+    this->mDelay = this->mBaseDelay;
+}
+void Game::initializeGame_survivalMode()
+{
+    this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength_survivalMode));
+    this->createRamdonFood();
+    this->mPtrSnake->senseFood(this->mFood);
+    this->mDifficulty = 0;
+    this->mPoints = 0;
+    this->mDelay = this->mBaseDelay;
+}
+void Game::initializeGame_twoMode()
+{
+    this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength,1));
+    this->nPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength,2));
+    this->createRamdonFood();
+    this->mPtrSnake->senseFood(this->mFood);
+    this->nPtrSnake->senseFood(this->mFood);
+    this->mDifficulty = 0;
+    this->mPoints = 0;
+    this->mDelay = this->mBaseDelay;
+}
 void Game::createRamdonFood()
 {
     std::vector<SnakeBody> availableGrids;
@@ -270,6 +347,17 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
+    for (int i = 0; i < snakeLength; i++)
+    {
+        mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
+    }
+    wrefresh(this->mWindows[1]);
+}
+
+void Game::rendernSnake() const
+{
+    int snakeLength = this->nPtrSnake->getLength();
+    std::vector<SnakeBody>& snake = this->nPtrSnake->getSnake();
     for (int i = 0; i < snakeLength; i++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
@@ -318,6 +406,95 @@ void Game::controlSnake() const
     }
 }
 
+void Game::controlmSnake() const
+{
+    int key;
+    key = getch();
+    switch (key)
+    {
+    case 'W':
+    case 'w':
+    {
+        this->mPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case 'S':
+    case 's':
+    {
+        this->mPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case 'A':
+    case 'a':
+    {
+        this->mPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case 'D':
+    case 'd':
+    {
+        this->mPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    case KEY_UP:
+    {
+        this->nPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case KEY_DOWN:
+    {
+        this->nPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case KEY_LEFT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case KEY_RIGHT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
+
+void Game::controlnSnake() const
+{
+    int key;
+    key = getch();
+    switch (key)
+    {
+    case KEY_UP:
+    {
+        this->nPtrSnake->changeDirection(Direction::Up);
+        break;
+    }
+    case KEY_DOWN:
+    {
+        this->nPtrSnake->changeDirection(Direction::Down);
+        break;
+    }
+    case KEY_LEFT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Left);
+        break;
+    }
+    case KEY_RIGHT:
+    {
+        this->nPtrSnake->changeDirection(Direction::Right);
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
 //void Game::renderBoards() const
 void Game::renderBoards_classicMode() const
 {
@@ -343,9 +520,9 @@ void Game::renderBoards_propMode() const
     {
         werase(this->mWindows[i]);
     }
-    this->renderInformationBoard_classicMode();
+    this->renderInformationBoard_propMode();
     this->renderGameBoard();
-    this->renderInstructionBoard_classicMode();
+    this->renderInstructionBoard_propMode();
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
@@ -362,7 +539,23 @@ void Game::renderBoards_survivalMode() const
     }
     this->renderInformationBoard_survivalMode();
     this->renderGameBoard();
-    this->renderInstructionBoard_classicMode();
+    this->renderInstructionBoard_survivalMode();
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        box(this->mWindows[i], 0, 0);
+        wrefresh(this->mWindows[i]);
+    }
+    this->renderLeaderBoard();
+}
+void Game::renderBoards_twoMode() const
+{
+    for (int i = 0; i < this->mWindows.size(); i++)
+    {
+        werase(this->mWindows[i]);
+    }
+    this->renderInformationBoard_classicMode();//todo
+    this->renderGameBoard();
+    this->renderInstructionBoard_classicMode();//todo
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
@@ -428,22 +621,39 @@ void Game::runGame_propMode()
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-
-        bool eatFood = this->mPtrSnake->moveFoward();
-        bool collision = this->mPtrSnake->checkCollision();
-        if (collision == true)
+        bool eatProp = this->mPtrSnake->moveFoward_PropMode();//检测是否能吃到道具
+        bool eatFood = this->mPtrSnake->moveFoward();//检测是否能吃到食物
+        //判断此时蛇能否吃掉自己
+        if(this->mPtrSnake->getIfCanEatSelf())
         {
-            break;
+            if(this->mPtrSnake->checkCollision_AllowEatSelf())
+            {
+                break;
+            }
+        }
+        else
+        {
+            if (this->mPtrSnake->checkCollision())
+            {
+                break;
+            }
         }
         this->renderSnake();
         if (eatFood == true)
         {
             this->mPoints += 1;
-            this->createRamdonFood();
+            this->createRamdomFood_PorpMode();
             this->mPtrSnake->senseFood(this->mFood);
             this->adjustDelay();
         }
+        if (eatProp == true)
+        {
+            this->mPoints += 1;
+            this->createRamdomProp();
+            this->adjustDelay();
+        }
         this->renderFood();
+        this->renderProp();
         this->renderDifficulty();
         this->renderPoints();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
@@ -465,8 +675,8 @@ void Game::runGame_survivalMode()
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
         const int longer_time = 1;//蛇长度变长的时间
-
         int now=this->gettime()/1000;//获取实时时间
+        const int food_time=4;//每隔4s产生一个道具
         bool eatFood = this->mPtrSnake->moveFoward_SurvivalMode();
         bool collision = this->mPtrSnake->checkCollision();
         if(now-lasttime>0){
@@ -474,10 +684,10 @@ void Game::runGame_survivalMode()
             count_time+=1;
             lasttime=now;
 
-            this->mPoints = count_time;//survival_time是game类里面的时间
+            this->mPoints = count_time;
             if(count_time%longer_time==0){
                 this->mPtrSnake->addHead();
-                
+
             }
 
         }
@@ -503,6 +713,47 @@ void Game::runGame_survivalMode()
         refresh();
     }
 }
+
+void Game::runGame_twoMode()
+{
+    bool moveSuccess;
+    int key;
+    while (true)
+    {
+        this->controlmSnake();
+        //this->controlnSnake();
+        werase(this->mWindows[1]);
+        box(this->mWindows[1], 0, 0);
+
+        bool meatFood = this->mPtrSnake->moveFoward();
+        bool neatFood = this->nPtrSnake->moveFoward();
+
+        bool mcollision = this->mPtrSnake->checkCollision();
+        bool ncollision = this->nPtrSnake->checkCollision();
+
+        if (mcollision == true || ncollision == true)
+        {
+            break;
+        }
+        this->renderSnake();
+        this->rendernSnake();
+        if (meatFood == true|| neatFood == true)
+        {
+            this->mPoints += 1;
+            this->createRamdonFood();
+            this->mPtrSnake->senseFood(this->mFood);
+            this->adjustDelay();
+        }
+        this->renderFood();
+        this->renderDifficulty();
+        this->renderPoints();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
+
+        refresh();
+    }
+}
+
 void Game::startGame()
 {
     refresh();
@@ -533,7 +784,7 @@ void Game::startGame()
             {
                 this->readLeaderBoard();
                 this->renderBoards_propMode();
-                this->initializeGame();
+                this->initializeGame_propMode();
                 this->runGame_propMode();
                 this->updateLeaderBoard();
                 this->writeLeaderBoard();
@@ -544,14 +795,26 @@ void Game::startGame()
             {
                 this->readLeaderBoard();
                 this->renderBoards_survivalMode();
-                this->initializeGame();
+                this->initializeGame_survivalMode();
                 this->runGame_survivalMode();
                 this->updateLeaderBoard();
                 this->writeLeaderBoard();
                 choice = this->renderRestartMenu();
                 break;
             }
+            case 4://4:two-player mode
+            {
+                this->readLeaderBoard();
+                this->renderBoards_twoMode();
+                this->initializeGame_twoMode();
+                this->runGame_twoMode();
+                this->updateLeaderBoard();
+                this->writeLeaderBoard();
+                choice = this->renderRestartMenu();
+                break;
             }
+            }
+            gamemode = this->modeSelect;
             if (choice == false)
             {
                 break;
@@ -618,7 +881,7 @@ void Game::setModeSelect(int mode) {
 }
 
 //Prop part
-
+//随机创造道具的函数
 void Game::createRamdomProp()
 {
     std::vector<SnakeBody> availableGrids;
@@ -626,7 +889,7 @@ void Game::createRamdomProp()
     {
         for (int j = 1; j < this->mGameBoardWidth - 1; j++)
         {
-            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfProp(j, i))
+            if (this->mPtrSnake->isPartOfSnake(j, i) || this->mPtrSnake->isPartOfProp(j, i) || this->mFood == SnakeBody(j,i))
             {
                 continue;
             }
@@ -638,8 +901,8 @@ void Game::createRamdomProp()
     }
 
     // Randomly select a grid that is not occupied by the snake
-    int random_idx = std::rand() % availableGrids.size();
-    int random_prop = std::rand() % 3 - 1;
+    int random_idx = std::rand() % availableGrids.size();//获取道具位置
+    int random_prop = std::rand() % 3 ;//获取道具类型
     PropType newprop;
     switch (random_prop)
     {
@@ -653,12 +916,55 @@ void Game::createRamdomProp()
         newprop = PropType::allowEatSelf;
         break;
     }
-    this->mPtrSnake->getMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
-
+    this->mPtrSnake->setMyProp(SnakeBody(availableGrids[random_idx].getX(), availableGrids[random_idx].getY(), newprop));
 }
 
+//道具模式中创造食物
+void Game::createRamdomFood_PorpMode()
+{
+    std::vector<SnakeBody> availableGrids;
+    for (int i = 1; i < this->mGameBoardHeight - 1; i++)
+    {
+        for (int j = 1; j < this->mGameBoardWidth - 1; j++)
+        {
+            if (this->mPtrSnake->isPartOfSnake(j, i)|| this->mPtrSnake->isPartOfProp(j,i))
+            {
+                continue;
+            }
+            else
+            {
+                availableGrids.push_back(SnakeBody(j, i));
+            }
+        }
+    }
 
+    // Randomly select a grid that is not occupied by the snake
+    int random_idx = std::rand() % availableGrids.size();
+    this->mFood = availableGrids[random_idx];
+}
 
+void Game::renderProp() const
+{
+    std::vector<SnakeBody> prop = this->mPtrSnake->getMyProp();
+    for(int i = 0; i < prop.size(); i++)
+    {
+        if(prop[i].getPropType() == PropType::reserveSnake)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolReserve);
+        }
+        if(prop[i].getPropType() == PropType::decreaseSize)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolDecrease);
+        }
+        if(prop[i].getPropType() == PropType::allowEatSelf)
+        {
+            mvwaddch(this->mWindows[1], prop[i].getY(), prop[i].getX(), this->mPropSymbolAllow);
+        }
+
+    }
+
+    wrefresh(this->mWindows[1]);
+}
 
 
 
