@@ -118,9 +118,9 @@ void Game::renderInstructionBoard_propMode() const
 {
     mvwprintw(this->mWindows[2], 1, 1, "Manual");
 
-    mvwprintw(this->mWindows[2], 3, 1, "switch head and tail");
-    mvwprintw(this->mWindows[2], 4, 1, "eat yourself");
-    mvwprintw(this->mWindows[2], 5, 1, "dizzy");
+    mvwprintw(this->mWindows[2], 3, 1, "reserve snake: $");
+    mvwprintw(this->mWindows[2], 4, 1, "decrease length: %");
+    mvwprintw(this->mWindows[2], 5, 1, "can or can't eat yourself: &");
     mvwprintw(this->mWindows[2], 6, 1, "more prop...");
 
     mvwprintw(this->mWindows[2], 8, 1, "Difficulty");

@@ -406,7 +406,9 @@ void Snake::moveFoward_EatSelf()
         {
             if(newHead == this->mSnake[i])
             {
-                for(int j=i; i<this->mSnake.size();i++)
+                int length = this->mSnake.size();
+
+                for(int j=i; i<length;i++)
                 {
                     this->mSnake.pop_back();
                 }
