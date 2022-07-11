@@ -2,7 +2,7 @@
 #define SNAKE_H
 
 #include <vector>
-
+#include <ctime>
 enum class Direction
 {
     Up = 0,
@@ -70,7 +70,7 @@ public:
     void ReserveSnake();
     void DecreaseSize();
     void AllowEatSelf();
-
+    void addHead();
 
 private:
     const int mGameBoardWidth;

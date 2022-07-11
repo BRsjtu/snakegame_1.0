@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1657438184 source:c:\users\21180\documents\github\snakegame_1.0\snake.cpp
+	<string>
+	<cstdlib>
+	<ctime>
+	<iostream>
+	"snake.h"
+
+1657438221 c:\users\21180\documents\github\snakegame_1.0\snake.h
+	<vector>
+

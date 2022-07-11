@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-
+#include <ctime>
 #include "snake.h"
 
 
@@ -25,14 +25,14 @@ public:
 	void createInstructionBoard();
     //void renderInstructionBoard() const;
     void renderInstructionBoard_classicMode() const;
-
+    void renderInformationBoard_survivalMode() const;
 		void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
     bool updateLeaderBoard();
     bool writeLeaderBoard();
     void renderLeaderBoard() const;
-
+    int gettime();
 		//void renderBoards() const;
     void renderBoards_classicMode() const;
     void renderBoards_propMode() const;
@@ -58,7 +58,7 @@ public:
     //prop
     void createRamdomProp();
     void selectProp(PropType prop);
-    void adjustDelay_SurvivalMode;
+    void adjustDelay_SurvivalMode(int decrease_difficulty);
 private:
     // We need to have two windows
     // One is for game introduction

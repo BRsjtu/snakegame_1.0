@@ -234,7 +234,10 @@ SnakeBody Snake::createNewHead()
 
     return newHead;
 }
-
+void Snake::addHead(){
+     SnakeBody newHead = this->createNewHead();
+    this->mSnake.insert(this->mSnake.begin(), newHead);
+}
 /*
  * If eat food, return true, otherwise return false
  */
@@ -256,6 +259,7 @@ bool Snake::moveFoward()
 }
 bool Snake::moveFoward_SurvivalMode(){
     if(this->touchFood()){
+        this->mSnake.pop_back();
         this->mSnake.pop_back();
         return true;
     }

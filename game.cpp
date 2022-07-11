@@ -10,7 +10,7 @@
 #include <algorithm>
 #include<ctime>
 #include "game.h"
-clock_t start,now;
+
 Game::Game()
 {
     // Separate the screen to three windows
@@ -62,7 +62,14 @@ void Game::renderInformationBoard_classicMode() const
     mvwprintw(this->mWindows[0], 4, 1, "Implemented using C++ and libncurses library.");
     wrefresh(this->mWindows[0]);
 }
-
+void Game::renderInformationBoard_survivalMode() const
+{
+    mvwprintw(this->mWindows[0], 1, 1, "Welcome to survival mode!");
+    mvwprintw(this->mWindows[0], 2, 1, "Author: Zeng Qiwen");
+    mvwprintw(this->mWindows[0], 3, 1, "Try your best to be alive");
+    mvwprintw(this->mWindows[0], 4, 1, "Implemented using C++ and libncurses library.");
+    wrefresh(this->mWindows[0]);
+}
 void Game::createGameBoard()
 {
     int startY = this->mInformationHeight;
@@ -353,7 +360,7 @@ void Game::renderBoards_survivalMode() const
     {
         werase(this->mWindows[i]);
     }
-    this->renderInformationBoard_classicMode();
+    this->renderInformationBoard_survivalMode();
     this->renderGameBoard();
     this->renderInstructionBoard_classicMode();
     for (int i = 0; i < this->mWindows.size(); i++)
@@ -372,9 +379,9 @@ void Game::adjustDelay()
         this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
     }
 }
-void Game::adjustDelay_SurvivalMode(){
-    this->mDifficulty = this->survival_time / 10; //该值需调试，10的话可能难度偏高（十秒加快一次）
-    if(survival_time % 10 == 0){
+void Game::adjustDelay_SurvivalMode(int decrese_difficulty){
+    this->mDifficulty = this->mPoints / 10 -decrese_difficulty;//该值需调试，10的话可能难度偏高（十秒加快一次）
+    if(mPoints % 10 == 0){
         this->mDelay = this->mBaseDelay * pow(0.75,this->mDifficulty);
     }
 }
@@ -444,42 +451,53 @@ void Game::runGame_propMode()
         refresh();
     }
 }
-
+int Game::gettime(){
+    return clock();
+}
 void Game::runGame_survivalMode()
 {
-    start=clock();//计时开始
+    int lasttime=0;
     int count_time=0;//用于计算的时间（int类型）
+    int decrease_difficulty=0;
     while (true)
     {
         this->controlSnake();
         werase(this->mWindows[1]);
         box(this->mWindows[1], 0, 0);
-        const int longer_time = 2;//蛇长度变长的时间
-        const int food_time=4;//每隔4s产生一个道具
-        now=clock();//获取实时时间
-        double survived_time=(double)((now-start)/CLOCKS_PER_SEC-count_time);//生存的时间（double类型）
-        if(survived_time>=1){
-            count_time++;
-        }
-        this->survival_time = count_time;//survival_time是game类里面的时间
-        if(count_time%longer_time==0){
-            this->mPtrSnake->creatNewHead();
-        }
-        bool eatFood = this->mPtrSnake->moveFoward_survivalMode();
+        const int longer_time = 1;//蛇长度变长的时间
+
+        int now=this->gettime()/1000;//获取实时时间
+        bool eatFood = this->mPtrSnake->moveFoward_SurvivalMode();
         bool collision = this->mPtrSnake->checkCollision();
+        if(now-lasttime>0){
+
+            count_time+=1;
+            lasttime=now;
+
+            this->mPoints = count_time;//survival_time是game类里面的时间
+            if(count_time%longer_time==0){
+                this->mPtrSnake->addHead();
+                
+            }
+
+        }
+        if (eatFood == true)
+        {
+                this->createRamdonFood();
+                this->mPtrSnake->senseFood(this->mFood);
+                if(this->mDifficulty>=1){
+                    decrease_difficulty++;
+                }
+        }
         if (collision == true)
         {
             break;
         }
         this->renderSnake();
-        if (eatFood == true&&count_time%food_time==0)
-        {
-            this->createRamdonFood();
-            this->mPtrSnake->senseFood(this->mFood);
-            this->adjustDelay();
-        }
+        this->adjustDelay_SurvivalMode(decrease_difficulty);
         this->renderFood();
         this->renderDifficulty();
+        this->renderPoints();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
@@ -489,8 +507,8 @@ void Game::startGame()
 {
     refresh();
     bool choice;
-    //int gamemode = this->modeSelect;//1:classic mode��2:prop mode��3:survival mode
-    int gamemode = 1;
+    //int gamemode = this->modeSelect;//1:classic mode  2:prop mode  3:survival mode
+    int gamemode = 3;
     while (true)
         //switch (gamemode)
     {
@@ -527,7 +545,7 @@ void Game::startGame()
                 this->readLeaderBoard();
                 this->renderBoards_survivalMode();
                 this->initializeGame();
-                this->runGame();
+                this->runGame_survivalMode();
                 this->updateLeaderBoard();
                 this->writeLeaderBoard();
                 choice = this->renderRestartMenu();
