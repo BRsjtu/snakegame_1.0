@@ -70,6 +70,7 @@ public:
     bool isPartOfProp(int x, int y);
     void setMyProp(SnakeBody prop);
     //void senseProp_PropMode(std::vector<SnakeBody> prop);
+    std::vector<SnakeBody> getMyProp () const;
     bool touchProp_PropMode();
     void ReserveSnake();
     void DecreaseSize();
@@ -77,7 +78,7 @@ public:
     bool checkCollision_AllowEatSelf();
     bool getIfCanEatSelf();
     void moveFoward_EatSelf();
-    std::vector<SnakeBody> getMyProp () const;
+    
 
 
 private:
