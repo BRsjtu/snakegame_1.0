@@ -42,9 +42,9 @@
 
 &emsp;生存模式一个重难点是计时器，为此我们在头文件加入了**ctime**，并使用了其中的**clock**函数，该函数能够一毫秒+1，除以1000后即是一秒加1的计时器，该计时器为定义在**Game**类中的函数**gettime**。
 &emsp;我们设定每隔1s，我们的蛇都会增长一次，因此当计时器每加1的时候，我们都会调用一次**addHead**函数，**addHead**函数是我们另写的用于增长蛇长度的函数，其定义在**Snake**类中，由之前的函数修改即可得到。
-&emsp；关于道具，我们仍旧使用了和classicmode相似的**food**以及其衍生函数，但是对于吃到道具后产生的效果，我们将原本的**moveForward**函数改写为**moveForward_SurvivalMode**函数，使得当蛇吃到道具时，其长度缩短2。
+&emsp；关于道具，我们仍旧使用了和classicmode相似的**food**以及其衍生函数，但是对于吃到道具后产生的效果，我们将原本的**moveForward**函数改写为**moveForward_SurvivalMode**函数，使得当蛇吃到道具时，其长度缩短2，而不是变长。
 &emsp：关于难度的调整，我们修改了**adjustDelay**为**adjustDelay_SurvivalMode**函数，使得难度每10s增加一次（会随着游戏分数增加逐渐变快），并且当蛇吃到道具时，当前难度-1（不能为负数）。
 &emsp：选择**gamemode**为**survivalmode**后，与**propmode**类似，将其中部分改为**survivalmode**对应的函数即可运行。
 &emsp：承载游戏的主体函数是**runGame_SurvivalMode**函数，在**while(true)**每次计时以及对是否吃到食物，是否要增长蛇的长度等等。当**checkCollision**函数返回值为false，即蛇撞到了墙或者撞到了自己，游戏结束。
-&emsp：关于游戏的得分，我们初始设定每隔五秒钟得一分，为了适应难度以及速度的变化，得分速度会越来越快，（与当前难度系数**mDifficulty**成正比）
+&emsp：关于游戏的得分，我们初始设定每隔五秒钟得一分，为了适应难度以及速度的变化，得分速度会越来越快，（与当前难度系数**mDifficulty**成正比）。而为了实现这一改动，我们编写了**renderTime**以及**renderRestart_survivalmode**等若干个函数。
 ## 3. 双人模式
