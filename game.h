@@ -25,7 +25,7 @@ public:
 
 	void createInstructionBoard();
     //void renderInstructionBoard() const;
-    void renderInstructionBoard_classicMode() const
+    void renderInstructionBoard_classicMode() const;
     void renderInstructionBoard_propMode() const;
     void renderInstructionBoard_survivalMode() const;
     void loadLeadBoard();
@@ -80,7 +80,6 @@ public:
     void renderProp() const;
 
     //survive
-    void adjustDelay_SurvivalMode(int decrease_difficulty);
 private:
     // We need to have two windows
     // One is for game introduction
