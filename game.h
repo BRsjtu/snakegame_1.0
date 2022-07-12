@@ -71,6 +71,7 @@ public:
 
 		void startGame();
     bool renderRestartMenu();//ɾ����constΪ���޸�modeSelect
+    bool renderRestartMenu_survivalmode();
     void adjustDelay();
     //int getCurrentTime();//��ȡ��Ϸ���е�ʱ�䣨��λ���룩
     void setModeSelect(int mode);//����ģʽ���޸�modeSelect��ֵ
@@ -82,7 +83,7 @@ public:
 
     void createRamdomFood_PorpMode();
     void renderProp() const;
-
+    void renderTime() const;
     //survive
 private:
     // We need to have two windows
@@ -93,6 +94,7 @@ private:
     int mScreenHeight;
     int mGameBoardWidth;
     int mGameBoardHeight;
+    int survived_points;
     const int mInformationHeight = 6;
     const int mInstructionWidth = 18;
     std::vector<WINDOW *> mWindows;

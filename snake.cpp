@@ -431,28 +431,56 @@ void Snake::ReserveSnake()
         reserveSnake.push_back(this->mSnake[i]);
     }
     this->mSnake = reserveSnake;
-    if(this->mSnake[0].getX() - this->mSnake[1].getX() == 1)
+    if(this->mSnake.size()==1)
     {
-        this->mDirection = Direction::Right;
+        switch(this->mDirection)
+        {
+            case Direction::Up:
+                this->mDirection = Direction::Down;
+                break;
+            case Direction::Down:
+                this->mDirection = Direction::Up;
+                break;
+            case Direction::Left:
+                this->mDirection = Direction::Right;
+                break;
+            case Direction::Right:
+                this->mDirection = Direction::Right;
+                break;
+            default:
+                break;
+        }
     }
-    if(this->mSnake[0].getX() - this->mSnake[1].getX() == -1)
+    else
     {
-        this->mDirection = Direction::Left;
+        if(this->mSnake[0].getX() - this->mSnake[1].getX() == 1)
+        {
+            this->mDirection = Direction::Right;
+        }
+        if(this->mSnake[0].getX() - this->mSnake[1].getX() == -1)
+        {
+            this->mDirection = Direction::Left;
+        }
+        if(this->mSnake[0].getY() - this->mSnake[1].getY() == 1)
+        {
+            this->mDirection = Direction::Down;
+        }
+        if(this->mSnake[0].getY() - this->mSnake[1].getY() == -1)
+        {
+            this->mDirection = Direction::Up;
+        }
     }
-    if(this->mSnake[0].getY() - this->mSnake[1].getY() == 1)
-    {
-        this->mDirection = Direction::Down;
-    }
-    if(this->mSnake[0].getY() - this->mSnake[1].getY() == -1)
-    {
-        this->mDirection = Direction::Up;
-    }
+    
 
 }
 
 void Snake::DecreaseSize()
 {
-    this->mSnake.pop_back();
+    if(this->mSnake.size()>1)
+    {
+        this->mSnake.pop_back();
+    }
+    
 }
 
 void Snake::AllowEatSelf()
