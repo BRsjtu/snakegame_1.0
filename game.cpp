@@ -61,6 +61,7 @@ void Game::renderInformationBoard_classicMode() const
     wrefresh(this->mWindows[0]);
 }
 
+
 void Game::renderInformationBoard_propMode() const
 {
     mvwprintw(this->mWindows[0], 1, 1, "This is prop mode!");
@@ -77,6 +78,16 @@ void Game::renderInformationBoard_survivalMode() const
     mvwprintw(this->mWindows[0], 4, 1, "Try to keep your snake as shorter as possible.");
     wrefresh(this->mWindows[0]);
 }
+
+void Game::renderInformationBoard_twoMode() const
+{
+    mvwprintw(this->mWindows[0], 1, 1, "This is classic snakegame mode!");
+    mvwprintw(this->mWindows[0], 2, 1, "Author: Br");
+    mvwprintw(this->mWindows[0], 3, 1, "Website: https://github.com/leimao/");
+    mvwprintw(this->mWindows[0], 4, 1, "Use WASD and UpDownLeftRight to control the two snakes.");
+    wrefresh(this->mWindows[0]);
+}
+
 
 void Game::createGameBoard()
 {
@@ -117,9 +128,9 @@ void Game::renderInstructionBoard_propMode() const
 {
     mvwprintw(this->mWindows[2], 1, 1, "Manual");
 
-    mvwprintw(this->mWindows[2], 3, 1, "reserve snake: $");
-    mvwprintw(this->mWindows[2], 4, 1, "decrease length: %");
-    mvwprintw(this->mWindows[2], 5, 1, "can or can't eat yourself: &");
+    mvwprintw(this->mWindows[2], 3, 1, "$: reserve snake");
+    mvwprintw(this->mWindows[2], 4, 1, "%: decrea length");
+    mvwprintw(this->mWindows[2], 5, 1, "&: eat yourself");
     mvwprintw(this->mWindows[2], 6, 1, "more prop...");
 
     mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
@@ -133,9 +144,26 @@ void Game::renderInstructionBoard_survivalMode() const
 {
     mvwprintw(this->mWindows[2], 1, 1, "Manual");
 
-    mvwprintw(this->mWindows[2], 3, 1, "length increasing");
-    mvwprintw(this->mWindows[2], 4, 1, "food decrease length");
-    mvwprintw(this->mWindows[2], 5, 1, "length to 2");
+    mvwprintw(this->mWindows[2], 3, 1, "len increasing");
+    mvwprintw(this->mWindows[2], 4, 1, "1 per second");
+    mvwprintw(this->mWindows[2], 5, 1, "eat food to");
+    mvwprintw(this->mWindows[2], 6, 1, "decre length ");
+
+    mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
+    mvwprintw(this->mWindows[2], 11, 1, "Points");
+
+    wrefresh(this->mWindows[2]);
+}
+
+void Game::renderInstructionBoard_twoMode() const
+{
+    mvwprintw(this->mWindows[2], 1, 1, "Manual");
+
+    mvwprintw(this->mWindows[2], 3, 1, "Up: W or Up");
+    mvwprintw(this->mWindows[2], 4, 1, "Down: S or Down");
+    mvwprintw(this->mWindows[2], 5, 1, "Left: A or Left");
+    mvwprintw(this->mWindows[2], 6, 1, "Right: D or Right");
+
     mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
     mvwprintw(this->mWindows[2], 11, 1, "Points");
 
@@ -649,9 +677,9 @@ void Game::renderBoards_twoMode() const
     {
         werase(this->mWindows[i]);
     }
-    this->renderInformationBoard_classicMode();//todo
+    this->renderInformationBoard_twoMode();//todo
     this->renderGameBoard();
-    this->renderInstructionBoard_classicMode();//todo
+    this->renderInstructionBoard_twoMode();//todo
     for (int i = 0; i < this->mWindows.size(); i++)
     {
         box(this->mWindows[i], 0, 0);
@@ -856,7 +884,7 @@ void Game::startGame()
     refresh();
     bool choice;
     //int gamemode = this->modeSelect;//1:classic mode  2:prop mode  3:survival mode
-    int gamemode = 3;
+    int gamemode = 1;
     while (true)
         //switch (gamemode)
     {

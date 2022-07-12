@@ -20,6 +20,8 @@ public:
     void renderInformationBoard_classicMode() const;
     void renderInformationBoard_propMode() const;
     void renderInformationBoard_survivalMode() const;
+    void renderInformationBoard_twoMode() const;
+
     void createGameBoard();
     void renderGameBoard() const;
 
@@ -28,6 +30,8 @@ public:
     void renderInstructionBoard_classicMode() const;
     void renderInstructionBoard_propMode() const;
     void renderInstructionBoard_survivalMode() const;
+    void renderInstructionBoard_twoMode() const;
+
     void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
