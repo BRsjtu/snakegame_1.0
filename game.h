@@ -67,6 +67,7 @@ public:
 
 		void startGame();
     bool renderRestartMenu();//ɾ����constΪ���޸�modeSelect
+    bool renderRestartMenu_survivalmode();
     void adjustDelay();
     //int getCurrentTime();//��ȡ��Ϸ���е�ʱ�䣨��λ���룩
     void setModeSelect(int mode);//����ģʽ���޸�modeSelect��ֵ

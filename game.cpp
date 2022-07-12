@@ -257,7 +257,101 @@ bool Game::renderRestartMenu()
     }
 
 }
+bool Game::renderRestartMenu_survivalmode()
+{
+    WINDOW* menu;
+    int width = this->mGameBoardWidth * 0.5;
+    int height = this->mGameBoardHeight * 0.5;
+    int startX = this->mGameBoardWidth * 0.25;
+    int startY = this->mGameBoardHeight * 0.25 + this->mInformationHeight;
 
+    menu = newwin(height, width, startY, startX);
+    box(menu, 0, 0);
+    std::vector<std::string> menuItems = { "classic mode","prop mode","survival mode", "two-player mode","Quit"};
+
+    int index = 0;
+    int offset = 4;
+    mvwprintw(menu, 1, 1, "Your Final Score:");
+    std::string pointString = std::to_string(this->survived_points);
+    mvwprintw(menu, 2, 1, pointString.c_str());
+    wattron(menu, A_STANDOUT);
+    mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 1 + offset, 1, menuItems[1].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 2 + offset, 1, menuItems[2].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 3 + offset, 1, menuItems[3].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 4 + offset, 1, menuItems[4].c_str());
+    wrefresh(menu);
+
+    int key;
+    while (true)
+    {
+        key = getch();
+        switch (key)
+        {
+        case 'W':
+        case 'w':
+        case KEY_UP:
+        {
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            index--;
+            index = (index < 0) ? menuItems.size() - 1 : index;
+            wattron(menu, A_STANDOUT);
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            wattroff(menu, A_STANDOUT);
+            break;
+        }
+        case 'S':
+        case 's':
+        case KEY_DOWN:
+        {
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            index++;
+            index = (index > menuItems.size() - 1) ? 0 : index;
+            wattron(menu, A_STANDOUT);
+            mvwprintw(menu, index + offset, 1, menuItems[index].c_str());
+            wattroff(menu, A_STANDOUT);
+            break;
+        }
+        }
+        wrefresh(menu);
+        if (key == ' ' || key == 10)
+        {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    delwin(menu);
+
+    if (index == 0)
+    {
+        this->setModeSelect(1);//classic mode
+        return true;
+    }
+    else if (index == 1)
+    {
+        this->setModeSelect(2);//prop mode
+        return true;
+    }
+    else if (index == 2)
+    {
+        this->setModeSelect(3);//survival mode
+        return true;
+    }
+    else if (index == 3)
+    {
+        this->setModeSelect(4);//two-player mode
+        return true;
+    }
+    else
+    {
+        return false;//quit
+    }
+
+}
 void Game::renderPoints() const
 {
     std::string pointString = std::to_string(this->mPoints);
@@ -802,7 +896,7 @@ void Game::startGame()
                 this->runGame_survivalMode();
                 this->updateLeaderBoard();
                 this->writeLeaderBoard();
-                choice = this->renderRestartMenu();
+                choice = this->renderRestartMenu_survivalmode();
                 break;
             }
             case 4://4:two-player mode
