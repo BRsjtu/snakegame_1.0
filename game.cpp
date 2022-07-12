@@ -300,7 +300,7 @@ bool Game::renderRestartMenu_survivalmode()
     int index = 0;
     int offset = 4;
     mvwprintw(menu, 1, 1, "Your Final Score:");
-    std::string pointString = std::to_string(this->survived_points);
+    std::string pointString = std::to_string(this->mPoints);
     mvwprintw(menu, 2, 1, pointString.c_str());
     wattron(menu, A_STANDOUT);
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
@@ -387,7 +387,7 @@ void Game::renderPoints() const
     wrefresh(this->mWindows[2]);
 }
 void Game::renderTime() const{
-    std::string survived=std::to_string(this->survived_points);
+    std::string survived=std::to_string(this->mPoints);
     mvwprintw(this->mWindows[2],12,1,survived.c_str());
     wrefresh(this->mWindows[2]);
 }
@@ -697,8 +697,8 @@ void Game::adjustDelay()
     }
 }
 void Game::adjustDelay_SurvivalMode(int decrese_difficulty){
-    this->mDifficulty = this->mPoints / 10 -decrese_difficulty;//该值需调试，10的话可能难度偏高（十秒加快一次）
-    if(mPoints % 10 == 0){
+    this->mDifficulty = this->mPoints / 2 -decrese_difficulty;//该值需调试，10的话可能难度偏高（十秒加快一次）
+    if(mPoints % 2 == 0){
         this->mDelay = this->mBaseDelay * pow(0.75,this->mDifficulty);
     }
 }
@@ -808,14 +808,14 @@ void Game::runGame_survivalMode()
             count_time+=1;
             lasttime=now;
 
-            this->mPoints = count_time;
+            this->mPoints = count_time/5;
             if(count_time%longer_time==0){
                 this->mPtrSnake->addHead();
 
             }
 
         }
-        this->survived_points=count_time/5;
+        this->survived_points=count_time;
         if (eatFood == true)
         {
                 this->createRamdonFood();
