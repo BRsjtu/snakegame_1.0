@@ -34,7 +34,7 @@
 &emsp;**allowEatSelf**道具的是实现主要是通过**IfCanEatSelf**变量的值来决定蛇是否可以吃自己的身体。（**IfCanEatSelf**初始值为0）在**selectProp**函数中选择**allowEatSelf**的**PropType**类型之后就可以进入**AllowEatSelf**函数中改变**IfCanEatSelf**的值。**runGame_propMode**函数中运行**moveFoward_PropMode**时，若是**IfCanEatSelf**值为1，即可以吃自己时，那么蛇就会通过**moveFoward_EatSelf**再次检测是否吃到了自己，这就实现了**allowEatSelf**道具的功能。
 
 ## 2. 生存模式
-### 2.1 生存模式具体介绍
+### 2.1 生存模式思路介绍
 
 设计这个模式时，运用了反向思维。普通的贪吃蛇都是通过吃东西得分并且使自己变得更长。逆向思维后，我设计出蛇会随着时间变长，并且根据生存时间的得分的模式。但是很明显，单纯的随时间变长，然后失败是毫无乐趣的游戏体验。因此，我增加了一个道具，使得用户在碰到这个道具时可以使蛇的长度变短，并降低难度系数，使得玩家更有参与感。另外，随时间增加的不仅只有长度，还有难度系数（即蛇的速度）。所以，尽你所能，活久一点。
 
@@ -43,8 +43,9 @@
 &emsp;生存模式一个重难点是计时器，为此我们在头文件加入了**ctime**，并使用了其中的**clock**函数，该函数能够一毫秒+1，除以1000后即是一秒加1的计时器，该计时器为定义在**Game**类中的函数**gettime**。
 &emsp;我们设定每隔1s，我们的蛇都会增长一次，因此当计时器每加1的时候，我们都会调用一次**addHead**函数，**addHead**函数是我们另写的用于增长蛇长度的函数，其定义在**Snake**类中，由之前的函数修改即可得到。
 &emsp；关于道具，我们仍旧使用了和classicmode相似的**food**以及其衍生函数，但是对于吃到道具后产生的效果，我们将原本的**moveForward**函数改写为**moveForward_SurvivalMode**函数，使得当蛇吃到道具时，其长度缩短2，而不是变长。
-&emsp：关于难度的调整，我们修改了**adjustDelay**为**adjustDelay_SurvivalMode**函数，使得难度每10s增加一次（会随着游戏分数增加逐渐变快），并且当蛇吃到道具时，当前难度-1（不能为负数）。
-&emsp：选择**gamemode**为**survivalmode**后，与**propmode**类似，将其中部分改为**survivalmode**对应的函数即可运行。
-&emsp：承载游戏的主体函数是**runGame_SurvivalMode**函数，在**while(true)**每次计时以及对是否吃到食物，是否要增长蛇的长度等等。当**checkCollision**函数返回值为false，即蛇撞到了墙或者撞到了自己，游戏结束。
-&emsp：关于游戏的得分，我们初始设定每隔五秒钟得一分，为了适应难度以及速度的变化，得分速度会越来越快，（与当前难度系数**mDifficulty**成正比）。而为了实现这一改动，我们编写了**renderTime**以及**renderRestart_survivalmode**等若干个函数。
+&emsp：关于难度的调整，我们修改了**adjustDelay**为**adjustDelay_SurvivalMode**函数，使得难度每10s增加一次（会随着游戏分数增加逐渐变快），并且当蛇吃到道具时，当前难度-1（不能为负数）。蛇吃到道具时，会使得**game**中**decrease_difficulty**这一变量加一，而**decrease_difficulty**这一变量是**adjustDelay_SurvivalMode**函数的参数，在之前**adjustDelay**这一函数基础上，将难度系数减去**decrease_difficulty**这一变量，即可实现降低难度。
+&emsp：选择**gamemode**为**survivalmode**后，与**propmode**类似，将其中部分改为**survivalmode**对应的函数即可运行，如**runGame_SurvivalMode**,**adjustDelay_SurvivalMode**。
+&emsp：承载游戏的主体函数是**runGame_SurvivalMode**函数，在**while(true)**每次计时以及对是否吃到食物，是否要增长蛇的长度等等。当**checkCollision**函数返回值为false，即蛇撞到了墙或者撞到了自己，游戏结束,输出分数。。
+&emsp：关于游戏的得分，我们初始设定每隔五秒钟得一分，为了适应难度以及速度的变化，得分速度会越来越快，（与当前难度系数**mDifficulty**成正比）。而为了实现这一改动，我们编写了**renderTime**以及**renderRestart_survivalmode**等若干个函数，使得返回的分数与其他模式相匹配，不会出现过高分数的情况。。
+&emsp：计时器介绍具体介绍：在**game**类中定义**int gettime**函数，该函数返回值每毫秒加1，而之后在下面定义了**count_time**变量为每秒加1的变量，初始值为0的**lasttime**变量，以及随时间变化的**now**变量。计时器原理是每当**now**减去**lasttime**大于0（因为二者均为**int**类型，所以该值最小为1，即时间过了1s）时，**count_time**加一，而之后通过**count_time%1==0**这一语句，使得后面的蛇长度函数**addNewHead**增长一秒触发一次。
 ## 3. 双人模式
