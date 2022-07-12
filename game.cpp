@@ -136,10 +136,8 @@ void Game::renderInstructionBoard_survivalMode() const
     mvwprintw(this->mWindows[2], 3, 1, "length increasing");
     mvwprintw(this->mWindows[2], 4, 1, "food decrease length");
     mvwprintw(this->mWindows[2], 5, 1, "length to 2");
-    mvwprintw(this->mWindows[2], 6, 1, "go into the door");
-
     mvwprintw(this->mWindows[2], 8, 1, "Difficulty");
-    mvwprintw(this->mWindows[2], 11, 1, "Time");
+    mvwprintw(this->mWindows[2], 11, 1, "Points");
 
     wrefresh(this->mWindows[2]);
 }
@@ -266,7 +264,11 @@ void Game::renderPoints() const
     mvwprintw(this->mWindows[2], 12, 1, pointString.c_str());
     wrefresh(this->mWindows[2]);
 }
-
+void Game::renderTime() const{
+    std::string survived=std::to_string(this->survived_points);
+    mvwprintw(this->mWindows[2],12,1,survived.c_str());
+    wrefresh(this->mWindows[2]);
+}
 
 void Game::renderDifficulty() const
 {
@@ -691,6 +693,7 @@ void Game::runGame_survivalMode()
             }
 
         }
+        this->survived_points=count_time/5;
         if (eatFood == true)
         {
                 this->createRamdonFood();
@@ -707,7 +710,7 @@ void Game::runGame_survivalMode()
         this->adjustDelay_SurvivalMode(decrease_difficulty);
         this->renderFood();
         this->renderDifficulty();
-        this->renderPoints();
+        this->renderTime();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();

@@ -78,7 +78,7 @@ public:
 
     void createRamdomFood_PorpMode();
     void renderProp() const;
-
+    void renderTime() const;
     //survive
 private:
     // We need to have two windows
@@ -89,6 +89,7 @@ private:
     int mScreenHeight;
     int mGameBoardWidth;
     int mGameBoardHeight;
+    int survived_points;
     const int mInformationHeight = 6;
     const int mInstructionWidth = 18;
     std::vector<WINDOW *> mWindows;
